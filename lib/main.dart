@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:password_manager/src/dark_theme_style.dart';
+import 'package:password_manager/src/dashboard_screen.dart';
+import 'package:password_manager/src/setting_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:window_size/window_size.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'dart:io';
 
+import 'src/dark_theme_provider.dart';
 import 'src/home_screen.dart';
 import 'src/password_list_provider.dart';
 
@@ -29,7 +33,20 @@ void setupWindow() {
 }
 
 void main() async {
-  runApp(const PasswordManagerApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (context) => DarkThemeProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => UserInputData(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => PasswordListProvider(),
+      ),
+    ],
+    child: PasswordManagerApp(),
+  ));
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -45,17 +62,17 @@ class PasswordManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<PasswordListProvider>(
-      create: (context) => PasswordListProvider(),
-      child: FocusScope(
-        child: MaterialApp(
-          title: "Password Manager",
-          theme: ThemeData(primarySwatch: Colors.blue),
-          initialRoute: '/',
-          routes: {
-            "/": (context) => const HomeScreen(),
-          },
-        ),
+    var themeData = Provider.of<DarkThemeProvider>(context);
+    themeData.loadTheme();
+    return FocusScope(
+      child: MaterialApp(
+        theme: Styles.themeData(themeData.isDark, context),
+        title: "Password Manager",
+        initialRoute: '/',
+        routes: {
+          "/": (context) => const HomeScreen(),
+          "settings": (context) => const SettingScrenn(),
+        },
       ),
     );
   }

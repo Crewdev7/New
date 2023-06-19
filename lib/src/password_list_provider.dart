@@ -2,18 +2,47 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+class UserData {
+  var password;
+
+  var title;
+
+  var username;
+  var passwordType;
+
+  UserData(
+      {required this.title,
+      required this.username,
+      required this.password,
+      required this.passwordType});
+}
+
 class PasswordListProvider extends ChangeNotifier {
-  List<String> passwords = [];
+  List<UserData> passwords = [];
+  bool isDarkMode = true;
 
   void addPassword(String password) {
-    passwords.add(password);
-    showNotification(password);
+    notifyListeners();
+  }
+
+  void addEntry(UserData userData) {
+    passwords.add(userData);
     notifyListeners();
   }
 
   void removePassword(String password) {
-    passwords.remove(password);
     showNotification(password);
+    notifyListeners();
+  }
+
+  // void filterPasswords(String query) {
+  //   passwords =
+  //       passwords.where((pass) => pass.toLowerCase().contains(query)).toList();
+  //   notifyListeners();
+  // }
+
+  void toggleDarkMode() {
+    isDarkMode = !isDarkMode;
     notifyListeners();
   }
 }
