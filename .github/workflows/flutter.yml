@@ -20,5 +20,7 @@ jobs:
         channel: 'stable'  
     # Get flutter packages
     - run: flutter pub get
-    # Build :D 
+    #doctor
+    - run: flutter doctor -v
+    # Build :D
     - run: flutter build apk
