@@ -11,6 +11,8 @@ jobs:
     # 6
     runs-on: ubuntu-latest
 
+    container:
+      image:  google/dart:latest
     # 7
     steps:
       # 8
