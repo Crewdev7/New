@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:password_manager/src/about_screen.dart';
 import 'package:password_manager/src/dashboard_screen.dart';
 import 'package:password_manager/src/password_list_screen.dart';
 import 'package:password_manager/src/setting_screen.dart';
@@ -16,7 +17,8 @@ class HomeScreen extends StatefulWidget {
 List<Widget> screens = [
   const DashboardScreen(),
   const PasswordListScreen(),
-  const SettingScrenn()
+  const SettingScrenn(),
+  const AboutScreen(),
 ];
 
 class _HomeScreenState extends State<HomeScreen> {
