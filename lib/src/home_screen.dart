@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/src/dashboard_screen.dart';
-import 'package:password_manager/src/password_list_provider.dart';
 import 'package:password_manager/src/password_list_screen.dart';
 import 'package:password_manager/src/setting_screen.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 List<Widget> screens = [
-  DashboardScreen(),
-  PasswordListScreen(),
-  SettingScrenn()
+  const DashboardScreen(),
+  const PasswordListScreen(),
+  const SettingScrenn()
 ];
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -25,12 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var dark_mode = Provider.of<DarkThemeProvider>(context);
+    var darkMode = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
           leading: IconButton(
               onPressed: () {
-                dark_mode.toggle();
+                darkMode.toggle();
               },
               icon: const Icon(Icons.dark_mode))),
       body: screens[currentIndex],

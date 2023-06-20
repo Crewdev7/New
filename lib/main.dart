@@ -48,13 +48,13 @@ void main() async {
     child: PasswordManagerApp(),
   ));
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings("@mipmap/ic_launcher");
-  final InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
+  // const AndroidInitializationSettings initializationSettingsAndroid =
+  //     AndroidInitializationSettings("@mipmap/ic_launcher");
+  // final InitializationSettings initializationSettings =
+  //     InitializationSettings(android: initializationSettingsAndroid);
+  // await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
 class PasswordManagerApp extends StatelessWidget {

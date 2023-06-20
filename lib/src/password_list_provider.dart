@@ -1,20 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:password_manager/src/dashboard_screen.dart';
 
 class UserData {
-  var password;
+  String password;
+  String title;
+  String username;
+  PasswordType passwordType;
+  DateTime createdAt;
+  int passwordLength;
 
-  var title;
-
-  var username;
-  var passwordType;
-
-  UserData(
-      {required this.title,
-      required this.username,
-      required this.password,
-      required this.passwordType});
+  UserData({
+    required this.title,
+    required this.username,
+    required this.password,
+    required this.passwordType,
+    required this.createdAt,
+    required this.passwordLength,
+  });
 }
 
 class PasswordListProvider extends ChangeNotifier {
@@ -31,7 +34,7 @@ class PasswordListProvider extends ChangeNotifier {
   }
 
   void removePassword(String password) {
-    showNotification(password);
+    // showNotification(password);
     notifyListeners();
   }
 
@@ -46,18 +49,18 @@ class PasswordListProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-void showNotification(String password) async {
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-    "my_app_id",
-    "my_name",
-    "its a notification for adding password",
-    importance: Importance.max,
-    // priority: Priority.high,
-  );
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-  await FlutterLocalNotificationsPlugin().show(0, "New Password",
-      "A new password was added $password", platformChannelSpecifics);
-}
+//
+// void showNotification(String password) async {
+//   const AndroidNotificationDetails androidPlatformChannelSpecifics =
+//       AndroidNotificationDetails(
+//     "my_app_id",
+//     "my_name",
+//     "its a notification for adding password",
+//     importance: Importance.max,
+//     // priority: Priority.high,
+//   );
+//   const NotificationDetails platformChannelSpecifics =
+//       NotificationDetails(android: androidPlatformChannelSpecifics);
+//   await FlutterLocalNotificationsPlugin().show(0, "New Password",
+//       "A new password was added $password", platformChannelSpecifics);
+// }

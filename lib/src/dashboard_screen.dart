@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:password_manager/src/password_list_provider.dart';
 import 'package:provider/provider.dart';
+import './utils/mix.dart';
 
 enum PasswordType {
   email,
@@ -69,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     value: type,
                     child: Row(
                       children: [
-                        _getIconForType(type),
+                        getIconForType(type),
                         const SizedBox(
                           width: 8.0,
                         ),
@@ -89,7 +90,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     userInputData.setTitle(value);
                   },
                   decoration: InputDecoration(
-                    prefixIcon: _getIconForType(userInputData.passwordType),
+                    prefixIcon: getIconForType(userInputData.passwordType),
                     suffixIcon: IconButton(
                         onPressed: _titlefieldController.clear,
                         icon: const Icon(Icons.clear)),
@@ -355,24 +356,8 @@ class UserInputData extends ChangeNotifier {
         title: title,
         username: username,
         password: password,
-        passwordType: passwordType);
-  }
-}
-
- _getIconForType(PasswordType type) {
-  switch (type) {
-    case PasswordType.email:
-      return const Icon(Icons.email);
-    case PasswordType.ios:
-      return const Icon(Icons.iso);
-    case PasswordType.android:
-      return const Icon(Icons.android);
-
-    case PasswordType.username:
-      return const Icon(Icons.verified_user);
-    case PasswordType.website:
-      return const Icon(Icons.web_sharp);
-    default:
-      return const Icon(Icons.verified_user_sharp);
+        passwordType: passwordType,
+        createdAt: DateTime.now(),
+        passwordLength: passLength);
   }
 }
