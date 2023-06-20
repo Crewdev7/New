@@ -22,6 +22,9 @@ dependencies:
   go_router: ^8.0.0
   flutter_local_notifications: ^13.0.0
   shared_preferences: any
+  fluttertoast: any
+  motion_toast: any
+  cherry_toast: any
 
   window_size:
     git:

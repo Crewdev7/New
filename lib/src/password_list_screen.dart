@@ -1,5 +1,10 @@
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:motion_toast/motion_toast.dart';
+import 'package:cherry_toast/cherry_toast.dart';
 
 import 'password_list_provider.dart';
 import 'utils/mix.dart';
@@ -12,109 +17,154 @@ class PasswordListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Store lists")),
-      body: ListView.builder(
-          padding: const EdgeInsets.only(top: 26, bottom: 30),
-          physics: const BouncingScrollPhysics(),
-          itemCount: dataProvider.passwords.length,
-          itemBuilder: (context, index) {
-            final password = dataProvider.passwords[index];
+      body: Column(
+        children: [
+          Card(
+            elevation: 2,
+            child: Text(dataProvider.passwords.length.toString()),
+          ),
+          Expanded(
+            child: ListView.builder(
+                padding: const EdgeInsets.only(top: 26, bottom: 30),
+                physics: const BouncingScrollPhysics(),
+                itemCount: dataProvider.passwords.length,
+                itemBuilder: (context, index) {
+                  final password = dataProvider.passwords[index];
 
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(32)),
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primaryContainer
-                      .withAlpha(30)),
-              child: ExpansionTile(
-                expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                  return Container(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(32)),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primaryContainer
+                            .withAlpha(30)),
+                    child: ExpansionTile(
+                      expandedCrossAxisAlignment: CrossAxisAlignment.start,
 
-                childrenPadding:
-                    const EdgeInsets.only(left: 32, top: 16, bottom: 16),
-                collapsedIconColor: Colors.green,
-                iconColor: Colors.lightBlue,
-                leading: getIconForType(password.passwordType),
-                title: Text(password.title),
-                // trailing: IconButton(
-                //   icon: const Icon(Icons.delete),
-                //   onPressed: () {
-                //     // dataProvider.removePassword(password.);
-                //   },
-                // ),
-                children: [
-                  Text.rich(
-                    TextSpan(
-                        text: "Username:  ",
-                        children: [TextSpan(text: password.username)]),
-                  ),
-                  const SizedBox(
-                    height: 3,
-                  ),
-                  Text.rich(
-                    TextSpan(
-                      text: "Password:  ",
+                      childrenPadding:
+                          const EdgeInsets.only(left: 32, top: 16, bottom: 16),
+                      collapsedIconColor: Colors.green,
+                      iconColor: Colors.lightBlue,
+                      leading: getIconForType(password.passwordType),
+                      title: Text(password.title),
+                      // trailing: IconButton(
+                      //   icon: const Icon(Icons.delete),
+                      //   onPressed: () {
+                      //     // dataProvider.removePassword(password.);
+                      //   },
+                      // ),
                       children: [
-                        TextSpan(
-                          text: password.password,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 18),
+                        Text.rich(
+                          TextSpan(
+                              text: "Username:  ",
+                              children: [TextSpan(text: password.username)]),
+                        ),
+                        const SizedBox(
+                          height: 3,
+                        ),
+                        Text.rich(
+                          TextSpan(
+                            text: "Password:  ",
+                            children: [
+                              TextSpan(
+                                text: password.password,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text.rich(
+                          TextSpan(
+                            text: "Password length:  ",
+                            children: [
+                              TextSpan(
+                                text: password.passwordLength.toString(),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text.rich(
+                          TextSpan(
+                            text: "Created at:  ",
+                            children: [
+                              TextSpan(
+                                text: password.createdAt.toString(),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        // For buttons to copy
+                        Row(
+                          children: [
+                            Container(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Clipboard.setData(ClipboardData(
+                                          text: password.password))
+                                      .then((value) => CherryToast.info(
+                                              title: const Text(
+                                                  "Password copied!"))
+                                          .show(context));
+                                  MotionToast.success(
+                                    description: const Text("password copied"),
+                                    height: 50,
+                                    width: 300,
+                                  ).show(context);
+
+                                  CherryToast.success(
+                                    title: const Text("Password copied"),
+                                    toastPosition: Position.bottom,
+                                  ).show(context);
+                                },
+                                child: const Text("Copy password"),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Container(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Clipboard.setData(
+                                      ClipboardData(text: password.username));
+                                  Fluttertoast.showToast(
+                                      msg: "username copied");
+
+                                  MotionToast.success(
+                                    description: const Text("username copied"),
+                                    height: 50,
+                                    width: 300,
+                                  ).show(context);
+
+                                  CherryToast.success(
+                                    title: const Text("Username copied"),
+                                    toastPosition: Position.bottom,
+                                  ).show(context);
+                                },
+                                child: const Text("Copy username"),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  Text.rich(
-                    TextSpan(
-                      text: "Password length:  ",
-                      children: [
-                        TextSpan(
-                          text: password.passwordLength.toString(),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 18),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text.rich(
-                    TextSpan(
-                      text: "Created at:  ",
-                      children: [
-                        TextSpan(
-                          text: password.createdAt.toString(),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 18),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  // For buttons to copy
-                  Row(
-                    children: [
-                      Container(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text("Copy password"),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Container(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text("Copy username"),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }),
+                  );
+                }),
+          ),
+        ],
+      ),
     );
   }
 }

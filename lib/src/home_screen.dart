@@ -28,12 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     var darkMode = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                darkMode.toggle();
-              },
-              icon: const Icon(Icons.dark_mode))),
+      // appBar: AppBar(
+      //     leading: IconButton(
+      //         onPressed: () {
+      //           darkMode.toggle();
+      //         },
+      //         icon: const Icon(Icons.dark_mode))),
       body: screens[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:password_manager/src/password_list_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './utils/mix.dart';
 
 enum PasswordType {
@@ -13,6 +14,15 @@ enum PasswordType {
   ios,
 }
 
+enum FieldTypes {
+  isSpecial,
+  isNumber,
+  isLowercase,
+  isUppercase,
+  isCustom,
+  passLimit,
+}
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -21,6 +31,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  SharedPreferences? _prefs;
   final _userfieldController = TextEditingController();
   final _titlefieldController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -30,6 +41,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool isNumber = true;
   bool isSpecial = true;
   bool isUpper = true;
+  bool isCustom = false;
+  var _sliderValue = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() => _prefs = prefs);
+      isSpecial = _prefs!.getBool(FieldTypes.isSpecial.toString())!;
+      isLower = _prefs!.getBool(FieldTypes.isLowercase.toString())!;
+      isUpper = _prefs!.getBool(FieldTypes.isUppercase.toString())!;
+      isCustom = _prefs!.getBool(FieldTypes.isCustom.toString())!;
+      isNumber = _prefs!.getBool(FieldTypes.isNumber.toString())!;
+      print("my state looks like after load:$prefs");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +77,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     var textStyle =
         const TextStyle(fontSize: 16, textBaseline: TextBaseline.ideographic);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Dashboard"),
-      ),
+    return MyScaffold(
+      appBarTitle: "Dashboard",
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -134,11 +159,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Consumer<UserInputData>(builder: (context, value, _) {
                 return Row(
                   children: [
-                    Text("${userInputData.passLength}"),
+                    Text(
+                        "Generated password length: ${userInputData.passLength}"),
                   ],
                 );
               }),
               // Custom optnios
+              Row(
+                children: [
+                  Text("${userInputData.passwordLimit}"),
+                  Expanded(
+                    child: Slider(
+                        min: 0,
+                        max: 100,
+                        value: _sliderValue,
+                        onChanged: (value) {
+                          setState(() {
+                            _sliderValue = value;
+                            userInputData.setPasswordLimit(value.toInt());
+                            userInputData.setPrefInt(
+                                FieldTypes.passLimit, value.toInt());
+                          });
+                        }),
+                  ),
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -163,6 +208,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           setState(() {
                             isUpper = val!;
                             userInputData.isUppercase = isUpper;
+                            userInputData.setPrefBool(
+                                FieldTypes.isUppercase, isUpper);
                           });
                         },
                         title: Text(
@@ -179,6 +226,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         setState(() {});
                         isLower = value!;
                         userInputData.isLowercase = isLower;
+
+                        userInputData.setPrefBool(
+                            FieldTypes.isLowercase, isLower);
                       },
                       value: isLower,
                       title: Text("Lowercase alphabets", style: textStyle),
@@ -192,6 +242,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       setState(() {
                         isNumber = value!;
                         userInputData.isNumbers = isNumber;
+                        userInputData.setPrefBool(
+                            FieldTypes.isNumber, isNumber);
                       });
                     },
                     title: Text("Numbers", style: textStyle),
@@ -203,6 +255,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       setState(() {
                         isSpecial = value!;
                         userInputData.isSpecialChars = isSpecial;
+                        userInputData.setPrefBool(
+                            FieldTypes.isSpecial, isSpecial);
                       });
                     },
                     title: Text("Special charaters", style: textStyle),
@@ -214,8 +268,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const Text("Include custom charaters:",
                           style: TextStyle(fontSize: 20)),
                       Switch(
-                          value: true,
+                          value: isCustom,
                           onChanged: (value) {
+                            setState(() {
+                              isCustom = value;
+
+                              userInputData.setPrefBool(
+                                  FieldTypes.isCustom, isCustom);
+                            });
+
 // TODO imple
                           }),
                     ],
@@ -226,23 +287,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         label: Text("Custom charaters/letters")),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                          onPressed: () {
-                            dataProvider.addEntry(userInputData.getData);
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Transform.scale(
+                          scale: 1.5,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                dataProvider.addEntry(userInputData.getData);
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Password added")));
-                          },
-                          child: const Text("Add")),
-                      ElevatedButton(
-                          onPressed: () {
-                            userInputData.resetFields();
-                          },
-                          child: const Text("Reset"))
-                    ],
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Password added")));
+                              },
+                              child: const Text("Add")),
+                        ),
+                        Transform.scale(
+                          scale: 1.5,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                userInputData.resetFields();
+                              },
+                              child: const Text("Reset")),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               )
@@ -280,6 +351,11 @@ class UserInputData extends ChangeNotifier {
   String generatedPass = "";
   int passLength = 0;
 
+  void setPasswordLimit(int value) {
+    passwordLimit = value;
+    notifyListeners();
+  }
+
   void setTitle(value) {
     title = value;
   }
@@ -309,6 +385,18 @@ class UserInputData extends ChangeNotifier {
       password += letters1[rand.nextInt(letters1.length)];
     }
     passLength = password.length;
+    notifyListeners();
+  }
+
+  Future<void> setPrefBool(FieldTypes field, bool val) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool(FieldTypes.values.toString(), val);
+    notifyListeners();
+  }
+
+  Future<void> setPrefInt(FieldTypes field, int val) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setInt(FieldTypes.values.toString(), val);
     notifyListeners();
   }
 
