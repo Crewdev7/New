@@ -1,19 +1,23 @@
+
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:motion_toast/motion_toast.dart';
-import 'package:cherry_toast/cherry_toast.dart';
+import 'package:password_manager/src/models/list_model_provider.dart';
+import 'package:provider/provider.dart';
 
-import 'password_list_provider.dart';
-import 'utils/mix.dart';
+import '../utils/mix.dart';
 
-class PasswordListScreen extends StatelessWidget {
-  const PasswordListScreen({super.key});
+
+class DataListScreen extends StatelessWidget {
+  const DataListScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final dataProvider = Provider.of<PasswordListProvider>(context);
+    final dataProvider = Provider.of<DataListProvider>(context);
+    final passwordLists= dataProvider.getLists;
+    final listLength= passwordLists.length;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Store lists")),
@@ -21,15 +25,15 @@ class PasswordListScreen extends StatelessWidget {
         children: [
           Card(
             elevation: 2,
-            child: Text(dataProvider.passwords.length.toString()),
+            child: Text(listLength.toString()),
           ),
           Expanded(
             child: ListView.builder(
                 padding: const EdgeInsets.only(top: 26, bottom: 30),
                 physics: const BouncingScrollPhysics(),
-                itemCount: dataProvider.passwords.length,
+                itemCount: listLength,
                 itemBuilder: (context, index) {
-                  final password = dataProvider.passwords[index];
+                  final password =passwordLists[index]; 
 
                   return Container(
                     margin:

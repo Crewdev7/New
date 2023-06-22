@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:password_manager/src/about_screen.dart';
-import 'package:password_manager/src/dashboard_screen.dart';
-import 'package:password_manager/src/password_list_screen.dart';
-import 'package:password_manager/src/setting_screen.dart';
+import 'package:password_manager/src/models/app_model_provider.dart';
+import 'package:password_manager/src/screens/about.dart';
+import 'package:password_manager/src/screens/add.dart';
+import 'package:password_manager/src/screens/list.dart';
+import 'package:password_manager/src/screens/setting.dart';
 import 'package:provider/provider.dart';
 
-import 'dark_theme_provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class InitScreen extends StatefulWidget {
+  const InitScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<InitScreen> createState() => _InitScreenState();
 }
 
 List<Widget> screens = [
-  const DashboardScreen(),
-  const PasswordListScreen(),
-  const SettingScrenn(),
+  const AddScreen(),
+  const DataListScreen(),
+  const SettingScreen(),
   const AboutScreen(),
 ];
 
-class _HomeScreenState extends State<HomeScreen> {
+class _InitScreenState extends State<InitScreen> {
   int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Provider.of<DarkThemeProvider>(context);
+    final appState= Provider.of<AppProvider>(context);
     return Scaffold(
       // appBar: AppBar(
       //     leading: IconButton(

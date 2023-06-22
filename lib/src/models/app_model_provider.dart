@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DarkThemeProvider extends ChangeNotifier {
+class AppProvider extends ChangeNotifier {
   bool _isDarkMode = false;
   bool get isDark => _isDarkMode;
 

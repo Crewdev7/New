@@ -1,17 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:password_manager/src/dark_theme_style.dart';
-import 'package:password_manager/src/dashboard_screen.dart';
-import 'package:password_manager/src/setting_screen.dart';
+import 'package:password_manager/src/globals.dart';
 import 'package:provider/provider.dart';
 import 'package:window_size/window_size.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'dart:io';
 
-import 'src/dark_theme_provider.dart';
-import 'src/home_screen.dart';
-import 'src/password_list_provider.dart';
+import 'src/models/add_model_provider.dart';
+import 'src/models/app_model_provider.dart';
+import 'src/models/list_model_provider.dart';
+import 'src/models/theme_provider.dart';
 
 const double windowWidth = 480;
 const double windowHeight = 854;
@@ -36,16 +35,16 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => DarkThemeProvider(),
+        create: (context) => AppProvider(),
       ),
       ChangeNotifierProvider(
-        create: (context) => UserInputData(),
+        create: (context) => InputDataProvider(),
       ),
       ChangeNotifierProvider(
-        create: (context) => PasswordListProvider(),
+        create: (context) => DataListProvider(),
       ),
     ],
-    child: PasswordManagerApp(),
+    child: const PasswordManagerApp(),
   ));
 
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -62,15 +61,17 @@ class PasswordManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var themeData = Provider.of<DarkThemeProvider>(context);
+    var themeData = Provider.of<AppProvider>(context);
     themeData.loadTheme();
+
     return FocusScope(
       child: MaterialApp(
+        // theme Provider
         theme: Styles.themeData(themeData.isDark, context),
-        title: "Password Manager",
+        title: appTitle,
         initialRoute: '/',
         routes: {
-          "/": (context) => const HomeScreen(),
+          "/": (context) => const InitScreen(),
           "settings": (context) => const SettingScrenn(),
         },
       ),

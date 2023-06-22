@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:password_manager/src/dark_theme_provider.dart';
+import 'package:password_manager/src/models/app_model_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../dashboard_screen.dart';
 
 getIconForType(PasswordType type) {
   switch (type) {
@@ -21,12 +19,11 @@ getIconForType(PasswordType type) {
       return const Icon(Icons.verified_user_sharp);
   }
 }
-
 class MyScaffold extends StatelessWidget {
   final appBarActions;
   final onDarkModeToggle;
-  final appBarTitle;
-  final body;
+  String? appBarTitle;
+  final Widget body;
   MyScaffold({
     super.key,
     required this.body,
@@ -42,15 +39,14 @@ class MyScaffold extends StatelessWidget {
     if (onDarkModeToggle == null) {
       mergedActions.add(IconButton(
           onPressed: () {
-            final darkModeProvider =
-                Provider.of<DarkThemeProvider>(context, listen: false);
-            darkModeProvider.toggle();
+            final appState = Provider.of<AppProvider>(context, listen: false);
+            appState.toggle();
           },
           icon: const Icon(Icons.brightness_6)));
     }
     return Scaffold(
       appBar: AppBar(
-        title: appBarTitle != null ? Text(appBarTitle) : null,
+        title: appBarTitle != null ? Text(appBarTitle!) : null,
         actions: mergedActions.isNotEmpty ? mergedActions : null,
       ),
       body: body,
