@@ -11,6 +11,8 @@ import 'src/models/add_model_provider.dart';
 import 'src/models/app_model_provider.dart';
 import 'src/models/list_model_provider.dart';
 import 'src/models/theme_provider.dart';
+import 'src/screens/init.dart';
+import 'src/screens/setting.dart';
 
 const double windowWidth = 480;
 const double windowHeight = 854;
@@ -72,7 +74,7 @@ class PasswordManagerApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           "/": (context) => const InitScreen(),
-          "settings": (context) => const SettingScrenn(),
+          "settings": (context) => const SettingScreen(),
         },
       ),
     );

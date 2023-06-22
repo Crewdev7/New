@@ -6,7 +6,6 @@ import 'package:password_manager/src/screens/list.dart';
 import 'package:password_manager/src/screens/setting.dart';
 import 'package:provider/provider.dart';
 
-
 class InitScreen extends StatefulWidget {
   const InitScreen({super.key});
 
@@ -26,7 +25,7 @@ class _InitScreenState extends State<InitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final appState= Provider.of<AppProvider>(context);
+    final appState = Provider.of<AppProvider>(context);
     return Scaffold(
       // appBar: AppBar(
       //     leading: IconButton(
