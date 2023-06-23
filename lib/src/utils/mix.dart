@@ -7,12 +7,14 @@ class MyScaffold extends StatelessWidget {
   final onDarkModeToggle;
   String? appBarTitle;
   final Widget body;
+  final Widget? floatingActionButton;
   MyScaffold({
     super.key,
     required this.body,
     this.appBarTitle,
     this.onDarkModeToggle,
     this.appBarActions,
+    this.floatingActionButton,
   });
 
   @override
@@ -33,6 +35,7 @@ class MyScaffold extends StatelessWidget {
         actions: mergedActions.isNotEmpty ? mergedActions : null,
       ),
       body: body,
+      floatingActionButton: floatingActionButton,
     );
   }
 }

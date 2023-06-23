@@ -184,49 +184,52 @@ class _AddScreenState extends State<AddScreen> {
                     height: 20,
                   )
                 ]),
+          ],
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Transform.scale(
-                    scale: 1.3,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        print("add");
-                        dataProvider.add(userInputData.getInputData);
-                      },
-                      child: const Text("Add"),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Transform.scale(
-                    scale: 1.3,
-                    child: FloatingActionButton(
-                        onPressed: () {
-                          boxstate.getSource();
-                          userInputData.generatedPassword(
-                              boxstate.source, boxstate.getPasswordLimit);
-                          print("password is:$password");
-                          print("password length:$passwordLength");
-                        },
-                        child: const Text("Passy")),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Transform.scale(
-                    scale: 1.3,
-                    child: FloatingActionButton(
-                        onPressed: () {
-                          userInputData.resetFields();
-                        },
-                        child: const Text("Reset")),
-                  ),
-                ],
+              child: Transform.scale(
+                scale: 1.3,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    print("add");
+                    dataProvider.add(userInputData.getInputData);
+                  },
+                  child: const Text("Add"),
+                ),
               ),
+            ),
+            const SizedBox(
+              width: 30,
+            ),
+            Transform.scale(
+              scale: 1.3,
+              child: FloatingActionButton(
+                  onPressed: () {
+                    boxstate.getSource();
+                    userInputData.generatedPassword(
+                        boxstate.source, boxstate.getPasswordLimit);
+                    print("password is:$password");
+                    print("password length:$passwordLength");
+                  },
+                  child: const Text("Passy")),
+            ),
+            const SizedBox(
+              width: 30,
+            ),
+            Transform.scale(
+              scale: 1.3,
+              child: FloatingActionButton(
+                  onPressed: () {
+                    userInputData.resetFields();
+                  },
+                  child: const Text("Reset")),
             ),
           ],
         ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -73,9 +75,9 @@ class DatabaseHelper {
 
   Future<Database> get initDatabase async {
     final databasesPath = await getDatabasesPath();
-    // if (!await Directory(databasesPath).exists()) {
-    //   await Directory(databasesPath).create(recursive: true);
-    // }
+    if (!await Directory(databasesPath).exists()) {
+      await Directory(databasesPath).create(recursive: true);
+    }
     final path = join(databasesPath, "oeoooeoooo.db");
 
     // final database = await openDatabase(
