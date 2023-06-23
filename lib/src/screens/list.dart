@@ -15,8 +15,10 @@ class DataListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dataProvider = Provider.of<DataListProvider>(context);
-    final passwordLists = dataProvider.getLists;
+    var passwordLists = dataProvider.password;
     final listLength = passwordLists.length;
+    // passwordLists = dataProvider.password;
+    dataProvider.getEntries;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Store lists")),
@@ -51,7 +53,8 @@ class DataListScreen extends StatelessWidget {
                           const EdgeInsets.only(left: 32, top: 16, bottom: 16),
                       collapsedIconColor: Colors.green,
                       iconColor: Colors.lightBlue,
-                      leading: getIconForType(password.passwordType),
+                      // leading: getIconForType(password.passwordType),
+                      leading: Icon(Icons.home),
                       title: Text(password.title),
                       // trailing: IconButton(
                       //   icon: const Icon(Icons.delete),

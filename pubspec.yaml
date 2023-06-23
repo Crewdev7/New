@@ -27,6 +27,7 @@ dependencies:
   cherry_toast: any
   sqlite3_flutter_libs: any
   sqflite: any
+  sqflite_common_ffi: any
   path: any
 
   window_size:

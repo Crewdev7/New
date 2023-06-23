@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:password_manager/src/globals.dart';
 import 'package:provider/provider.dart';
 import 'package:window_size/window_size.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'dart:io';
 
@@ -13,6 +12,8 @@ import 'src/models/list_model_provider.dart';
 import 'src/models/theme_provider.dart';
 import 'src/screens/init.dart';
 import 'src/screens/setting.dart';
+
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 const double windowWidth = 480;
 const double windowHeight = 854;
@@ -33,7 +34,10 @@ void setupWindow() {
   }
 }
 
-void main() async {
+Future main() async {
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+  // await DatabaseHelper.internal().initDatabase;
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
@@ -44,6 +48,9 @@ void main() async {
       ),
       ChangeNotifierProvider(
         create: (context) => DataListProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => Sources(),
       ),
     ],
     child: const PasswordManagerApp(),

@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:password_manager/src/models/add_model_provider.dart';
 import 'package:password_manager/src/models/list_model_provider.dart';
 import 'package:provider/provider.dart';
@@ -19,23 +19,40 @@ class _AddScreenState extends State<AddScreen> {
   final _titlefieldController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final _customCharController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final dataProvider = Provider.of<DataListProvider>(context);
-    final userInputData = Provider.of<InputDataProvider>(context);
-    final sources = Provider.of<Sources>(context);
-    final toggle = sources.toggleSource;
+    final dataProvider = context.watch<DataListProvider>();
+    final userInputData = /* Provider.of<InputDataProvider>(context); */
+
+        context.watch<InputDataProvider>();
+    final boxstate = context.watch<Sources>();
+    final toggleCheckbox = boxstate.toggleSource;
+    final isChecked = boxstate.isChecked;
+    final passwordType = userInputData.passwordType;
+
+    final usernameTitle = userInputData.title;
+    var username = userInputData.username;
+    var password = userInputData.password;
+    final usernameLength = userInputData.usernameLength;
+    final passwordLength = userInputData.passwordLength;
+    final titleLength = userInputData.title.length;
 
 // to keep state while screen switching
-    _passwordController.text = userInputData.getPassword;
-    _userfieldController.text = userInputData.getUsername;
-    _titlefieldController.text = userInputData.getTitle;
+    _passwordController.text = password;
+    _userfieldController.text = username;
+    _titlefieldController.text = usernameTitle;
+
+    _customCharController.text = boxstate.customChars;
 
     // This fix cursor moving to front
     _passwordController.selection = TextSelection.fromPosition(
         TextPosition(offset: _passwordController.text.length));
     _userfieldController.selection = TextSelection.fromPosition(
         TextPosition(offset: _userfieldController.text.length));
+
+    _titlefieldController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _titlefieldController.text.length));
 
     return MyScaffold(
       appBarTitle: "Dashboard",
@@ -45,123 +62,172 @@ class _AddScreenState extends State<AddScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Dropdown menu for type selection
-            const TypeDropdown(label: "Type"),
+            TypeDropdown(
+              label: "Type",
+              type: passwordType,
+            ),
             const SizedBox(height: 20),
 
             ...[
+              // Title
+              CusInputTextField(
+                  label: "Title",
+                  // leadingIcon: const Icon(Icons.one_k_plus),
+                  controller: _titlefieldController,
+                  onChange: (v) {
+                    userInputData.title = v;
+                  }),
+              LengthProvider(length: titleLength),
+
               // Username
               CusInputTextField(
-                  label: userInputData.getFieldName,
-                  pIcon: getIconForType(userInputData.getPasswordType),
+                  label: "Username",
+                  leadingIcon: getIconForType(passwordType),
                   controller: _userfieldController,
                   onChange: (v) {
-                    userInputData.setUsername = v;
+                    userInputData.username = v;
                   }),
-              LengthProvider(length: userInputData.getUsernameLength),
+              LengthProvider(length: usernameLength),
 
               // Password
               CusInputTextField(
                   label: "Password",
-                  pIcon: const Icon(Icons.password),
+                  leadingIcon: const Icon(Icons.password),
                   controller: _passwordController,
                   onChange: (v) {
-                    userInputData.setPassword = v;
+                    userInputData.password = v;
                   }),
-              LengthProvider(length: userInputData.getPasswordLength),
+              LengthProvider(length: passwordLength),
+              Center(
+                  child: Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                        min: 1,
+                        max: 100,
+                        value: boxstate.getPasswordLimit.toDouble(),
+                        onChanged: (v) {
+                          boxstate.setPasswordLimit = v.toInt();
+                        }),
+                  ),
+                  Text(boxstate.getPasswordLimit.toString()),
+                ],
+              )),
 
               const Center(
                   child: Text("Include:", style: TextStyle(fontSize: 20))),
-
+// Move state up maybe
               Column(
                 children: [
                   Card(
                     child: CustomCheckboxTile(
-                      ischeckd: true,
                       text: "Uppercase",
                       subtitle: "eg:  ABC..YZ",
-                      onChange: toggle,
+                      onChange: boxstate,
                       keyname: "uppercase",
                     ),
                   ),
                   Card(
                     child: CustomCheckboxTile(
-                      ischeckd: true,
                       text: "Lowercase",
                       subtitle: "eg:  abc..yz",
-                      onChange: toggle,
+                      onChange: boxstate,
                       keyname: "lowercase",
                     ),
                   ),
                   Card(
                     child: CustomCheckboxTile(
-                      // ischeckd: isChecked,
-                      ischeckd: true,
                       text: "Numbers",
                       subtitle: "eg:  1234567890",
-                      onChange: toggle,
+                      onChange: boxstate,
                       keyname: "number",
                     ),
                   ),
                   Card(
                     child: CustomCheckboxTile(
-                      ischeckd: true,
                       text: "Special chars.",
                       subtitle: "eg:  `~!@#\$%^&*(){}|+?_/-_...",
-                      onChange: toggle,
+                      onChange: boxstate,
                       keyname: "special",
                     ),
                   ),
                   const Divider(),
-                  const Row(
+                  Row(
                     children: [
-                      Text("Include custom charaters:",
+                      const Text("Include custom charaters:",
                           style: TextStyle(fontSize: 20)),
-                      Switch(value: true, onChanged: null)
+                      Switch(
+                          value: boxstate.custom,
+                          onChanged: (v) {
+                            boxstate.toggleSource('custom', v);
+                          })
                     ],
                   ),
-                  TextField(
-                    onChanged: (value) {},
-                    decoration: const InputDecoration(
-                        label: Text("Custom charaters/letters")),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Transform.scale(
-                          scale: 1.5,
-                          child: ElevatedButton(
-                              onPressed: () {
-                                dataProvider
-                                    .addEntry(userInputData.getInputData);
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text("Password added")));
-                              },
-                              child: const Text("Add")),
-                        ),
-                        Transform.scale(
-                          scale: 1.5,
-                          child: ElevatedButton(
-                              onPressed: () {
-                                userInputData.resetFields();
-                              },
-                              child: const Text("Reset")),
+                  boxstate.custom
+                      ? TextField(
+                          maxLines: 5,
+                          minLines: 1,
+                          controller: _customCharController,
+                          onChanged: (value) {
+                            boxstate.customChars = value;
+                          },
+                          decoration: const InputDecoration(
+                              label: Text("Custom charaters/letters")),
                         )
-                      ],
-                    ),
-                  ),
+                      : const Divider(),
+                  const SizedBox(height: 20),
                 ],
-              )
+              ),
             ].expand((element) => [
                   element,
                   const SizedBox(
                     height: 20,
                   )
-                ])
+                ]),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Transform.scale(
+                    scale: 1.3,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        print("add");
+                        dataProvider.add(userInputData.getInputData);
+                      },
+                      child: const Text("Add"),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  Transform.scale(
+                    scale: 1.3,
+                    child: FloatingActionButton(
+                        onPressed: () {
+                          boxstate.getSource();
+                          userInputData.generatedPassword(
+                              boxstate.source, boxstate.getPasswordLimit);
+                          print("password is:$password");
+                          print("password length:$passwordLength");
+                        },
+                        child: const Text("Passy")),
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  Transform.scale(
+                    scale: 1.3,
+                    child: FloatingActionButton(
+                        onPressed: () {
+                          userInputData.resetFields();
+                        },
+                        child: const Text("Reset")),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -172,17 +238,13 @@ class _AddScreenState extends State<AddScreen> {
 class CustomCheckboxTile extends StatelessWidget {
   final String text;
   final String subtitle;
-  final onChange;
+  final Sources onChange;
   final String keyname;
-  // bool value;
-  bool ischeckd;
 
-  var checked = false;
-  CustomCheckboxTile({
+  const CustomCheckboxTile({
     super.key,
     required this.text,
     required this.onChange,
-    required this.ischeckd,
     required this.subtitle,
     required this.keyname,
   });
@@ -191,9 +253,12 @@ class CustomCheckboxTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return CheckboxListTile(
       onChanged: (val) {
-        checked = onChange(keyname, val);
+        if (kDebugMode) {
+          print("checkbokvalue: $val");
+        }
+        onChange.toggleSource(keyname, val!);
       },
-      value: checked,
+      value: onChange.isChecked(keyname),
       title: Text(text),
       subtitle: Text(subtitle),
     );
@@ -202,16 +267,19 @@ class CustomCheckboxTile extends StatelessWidget {
 
 class TypeDropdown extends StatelessWidget {
   final String label;
-  const TypeDropdown({super.key, required this.label});
+  PasswordType type;
+  TypeDropdown({
+    super.key,
+    required this.label,
+    required this.type,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final passwordModel = Provider.of<InputDataProvider>(context);
-    final passwordType = passwordModel.getPasswordType;
     return DropdownButtonFormField<PasswordType>(
-      value: passwordType, // set default value
+      value: type, // set default value
       onChanged: (v) {
-        passwordModel.setPasswordType = v!;
+        type = v!;
       },
       decoration: InputDecoration(labelText: label),
       items: PasswordType.values.map((type) {
@@ -230,14 +298,14 @@ class TypeDropdown extends StatelessWidget {
 }
 
 class CusInputTextField extends StatelessWidget {
-  final Icon pIcon;
-  final controller;
-  final onChange;
+  final Icon? leadingIcon;
+  final TextEditingController controller;
+  final Function(dynamic) onChange;
   final String label;
 
   const CusInputTextField({
     super.key,
-    required this.pIcon,
+    this.leadingIcon,
     required this.controller,
     required this.onChange,
     required this.label,
@@ -251,7 +319,7 @@ class CusInputTextField extends StatelessWidget {
       },
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: pIcon,
+        prefixIcon: leadingIcon,
       ),
     );
   }

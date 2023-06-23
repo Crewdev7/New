@@ -36,12 +36,13 @@ enum PasswordType {
 }
 
 class PasswordData {
-  String password;
-  String title;
-  String username;
-  PasswordType passwordType;
-  DateTime createdAt;
-  int passwordLength;
+  final String title;
+  final String username;
+  final String password;
+  final int passwordLength;
+  final PasswordType passwordType;
+  final DateTime createdAt;
+  final int? id;
 
   PasswordData({
     required this.title,
@@ -50,5 +51,25 @@ class PasswordData {
     required this.passwordType,
     required this.createdAt,
     required this.passwordLength,
+    this.id,
   });
+  // PasswordData.fromJsonMap(Map<String, dynamic> map)
+  //     : id = map['id'] as int,
+  //       title = map['title'] as String,
+  //       password = map['password'] as String,
+  //       username = map['username'] as String,
+  //       passwordType = map['passwordType'] as PasswordType,
+  //       createdAt =
+  //           DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+  //       passwordLength = map['passwordLength'] as String;
+  //
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'title': title,
+        'username': username,
+        'password': password,
+        'passwordLength': passwordLength.toString(),
+        'passwordType': passwordType.toString(),
+        'createdAt': createdAt.millisecondsSinceEpoch,
+      };
 }

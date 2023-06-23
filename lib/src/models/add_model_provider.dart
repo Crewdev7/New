@@ -1,11 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 import '../globals.dart';
+// BUGS
+///// when a type somethitg on any text input fields then checkbox state also renders
+///// te test add print call in checkbox widget and chekc for on chonge value in onchange function
 
 class Sources extends ChangeNotifier {
-  int _passwordLimit = 8;
+  // Public field no need to  encapsulate
   bool uppercase = true;
   bool lowercase = true;
   bool number = true;
@@ -15,14 +18,15 @@ class Sources extends ChangeNotifier {
   final letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   final numbers = 1234567890;
   final specialChars = "~`!@#\$%^&*(){}/?+=-_|\\::\"";
-  String? customChars;
-  // methods
-  //    getters
+  String customChars = "";
+
+  int _passwordLimit = 8;
   int get getPasswordLimit => _passwordLimit;
 
   String source = "";
 
   void getSource() {
+    source = "";
     if (uppercase) {
       source += letters;
     }
@@ -35,13 +39,21 @@ class Sources extends ChangeNotifier {
     if (special) {
       source += specialChars;
     }
-    if (custom && customChars != null) {
-      source += customChars!;
+    if (custom && customChars.isNotEmpty) {
+      source += customChars.replaceAll(" ", "");
+    }
+    if (kDebugMode) {
+      print("getSource in add model Rendered again is this normal::::??");
+      print("password sources are: $source");
     }
     notifyListeners();
   }
 
-  isChecked(field) {
+  bool isChecked(field) {
+    if (kDebugMode) {
+      print("IsChekched from add model Rendered again is this normal::::??");
+      print("ischecked recive: f$field");
+    }
     if (field == "uppercase") {
       return uppercase;
     }
@@ -61,7 +73,7 @@ class Sources extends ChangeNotifier {
   }
 
   bool toggleSource(String keyname, bool val) {
-    var isTrue;
+    bool isTrue;
     switch (keyname) {
       case "uppercase":
         isTrue = uppercase = val;
@@ -122,88 +134,92 @@ class Sources extends ChangeNotifier {
     } catch (e) {
       throw Error.safeToString(e);
     }
-    ;
   }
 }
 
 class InputDataProvider extends ChangeNotifier {
   PasswordType _passwordType = PasswordType.username;
 
-  String _title = "";
-  String _username = "";
-  String _password = "";
-  int _passwordLength = 0;
-  int _usernameLength = 0;
-
-  int get getPasswordLength => _passwordLength;
-  int get getUsernameLength => _usernameLength;
-  String get getTitle => _title;
-  String get getUsername => _username;
-  String get getPassword => _password;
-
-  PasswordType get getPasswordType => _passwordType;
-
-  String get getFieldName {
-    var pass = getPasswordType.toString().split('.').last;
-    return pass[0].toUpperCase() + pass.substring(1);
-  }
-
-  void generatedPassword(String source, int limit) {
-    for (var i = 0; i < limit; i++) {
-      var rand = Random();
-      _password += source[rand.nextInt(source.length)];
-    }
-    setPassword = _password;
-    setPassLength = getPasswordLength;
-  }
-
-  set setPasswordType(PasswordType v) {
-    _passwordType = v;
+  PasswordType get passwordType => _passwordType;
+  set passwordType(PasswordType value) {
+    _passwordType = value;
     notifyListeners();
   }
 
-  set setTitle(String value) {
+  String _title = "";
+  String get title => _title;
+  set title(String value) {
     _title = value;
     notifyListeners();
   }
 
-  set setPassword(String value) {
-    _password = value;
-    _passwordLength = value.length;
-    notifyListeners();
-  }
-
-  set setUsername(String value) {
+  String _username = "";
+  String get username => _username;
+  set username(String value) {
     _username = value;
-    _usernameLength = value.length;
+    usernameLength = value.length;
     notifyListeners();
   }
 
-  set setPassLength(int value) {
+  String _password = "";
+  String get password => _password;
+  set password(String value) {
+    _password = "";
+    _password = value;
+    passwordLength = _password.length;
+    notifyListeners();
+  }
+
+  int _passwordLength = 0;
+  int get passwordLength => _passwordLength;
+  set passwordLength(int value) {
     _passwordLength = value;
     notifyListeners();
   }
 
-  void resetFields({user = true, pass = true, title = true}) {
+  int _usernameLength = 0;
+  int get usernameLength => _usernameLength;
+  set usernameLength(int value) {
+    _usernameLength = value;
+    notifyListeners();
+  }
+
+  String get getFieldName {
+    var pass = passwordType.toString().split('.').last;
+    return pass[0].toUpperCase() + pass.substring(1);
+  }
+
+  void generatedPassword(String source, int limit) {
+    password = "";
+    for (var i = 0; i < limit; i++) {
+      var rand = Random();
+      password += source[rand.nextInt(source.length)];
+    }
+    passwordLength = password.length;
+    notifyListeners();
+  }
+
+  void resetFields({user = true, pass = true, title1 = true}) {
     if (user) {
-      setUsername = user;
+      username = "";
     }
     if (pass) {
-      setPassword = pass;
+      password = "";
     }
-    if (title) {
-      setTitle = title;
+    if (title1) {
+      title = "";
     }
     notifyListeners();
   }
 
   PasswordData get getInputData {
     return PasswordData(
-        title: getTitle,
-        username: getUsername,
-        password: getPassword,
-        passwordType: getPasswordType,
-        createdAt: DateTime.now(),
-        passwordLength: getPasswordLength);
+      title: title,
+      username: username,
+      password: password,
+      passwordType: passwordType,
+      createdAt: DateTime.now(),
+      passwordLength: passwordLength,
+    );
   }
 }
