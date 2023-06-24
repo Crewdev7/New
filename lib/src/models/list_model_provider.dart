@@ -10,8 +10,9 @@ import '../globals.dart';
 
 class DataListProvider extends ChangeNotifier {
   List<PasswordData1> _passwords = [];
+
   final _databaseHelper = DatabaseHelper();
-  get password {
+  List<PasswordData1> get password {
     return _passwords;
   }
 
@@ -20,19 +21,19 @@ class DataListProvider extends ChangeNotifier {
   }
 
   Future<int> add(PasswordData userData) async {
-    // var ok2 = await _databaseHelper.database;
-    // var ok = await _databaseHelper.database;
-    //
-    // print("tablename:${_databaseHelper.tabelname}");
-    // await ok.insert(_databaseHelper.tabelname!, userData.toMap());
-    return await _databaseHelper.insertEntry(userData);
+    return await _databaseHelper.insertEntry(userData).then((id) {
+      notifyListeners();
+      return id;
+    });
   }
 
-  Future<void> get getEntries async {
+  Future<bool> get getEntries async {
     final entries = await _databaseHelper.getEntries();
     _passwords.clear();
     _passwords.addAll(
         entries.map((json) => PasswordData1.fromJsonMap(json)).toList());
+    notifyListeners();
+    return true;
   }
 
   Future<PasswordData1?> getEtry(int id) async {
@@ -80,19 +81,12 @@ class DatabaseHelper {
     }
     final path = join(databasesPath, "oeoooeoooo.db");
 
-    // final database = await openDatabase(
-    //     join(await getDatabasesPath(), "testing.db"), onCreate: (db, version) {
-    //   return db.execute(
-    //       "CREATE TABLE dogs(id INTEGER PRIMARY KEY,name TEXT,age INTEGER)");
-    // }, version: 1);
-    //
-    // return await database.insert("dogs", data.toMap());
     return await openDatabase(
       path,
       version: 1,
       onCreate: (db, version) {
         db.execute('''
-              CREATE TABLE $tabelname(
+              CREATE TABLE IF NOT EXISTS $tabelname(
               id INTEGER PRIMARY KEY,
               title TEXT,
               username TEXT,

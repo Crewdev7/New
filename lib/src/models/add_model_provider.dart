@@ -141,16 +141,15 @@ class InputDataProvider extends ChangeNotifier {
   PasswordType _passwordType = PasswordType.username;
 
   PasswordType get passwordType => _passwordType;
-  set passwordType(PasswordType value) {
+  void spasswordType(PasswordType value) {
     _passwordType = value;
-    notifyListeners();
   }
 
   String _title = "";
   String get title => _title;
   set title(String value) {
     _title = value;
-    notifyListeners();
+
   }
 
   String _username = "";

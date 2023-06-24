@@ -64,7 +64,6 @@ class _AddScreenState extends State<AddScreen> {
             // Dropdown menu for type selection
             TypeDropdown(
               label: "Type",
-              type: passwordType,
             ),
             const SizedBox(height: 20),
 
@@ -270,19 +269,19 @@ class CustomCheckboxTile extends StatelessWidget {
 
 class TypeDropdown extends StatelessWidget {
   final String label;
-  PasswordType type;
-  TypeDropdown({
+  const TypeDropdown({
     super.key,
     required this.label,
-    required this.type,
   });
 
   @override
   Widget build(BuildContext context) {
+    var passwordType = context.select((InputDataProvider p) => p.passwordType);
     return DropdownButtonFormField<PasswordType>(
-      value: type, // set default value
+      value: passwordType, // set default value
       onChanged: (v) {
-        type = v!;
+        print("hey:$v");
+        context.read<InputDataProvider>().spasswordType(v!);
       },
       decoration: InputDecoration(labelText: label),
       items: PasswordType.values.map((type) {
