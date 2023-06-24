@@ -32,7 +32,9 @@ class DataListProvider extends ChangeNotifier {
     _passwords.clear();
     _passwords.addAll(
         entries.map((json) => PasswordData1.fromJsonMap(json)).toList());
-    notifyListeners();
+    var s = password.forEach((element) {
+      print("${element.toJsonMap().toString()}");
+    });
     return true;
   }
 
@@ -133,9 +135,11 @@ class PasswordData1 {
   final String username;
   // Change it to  passwordType
   final String passwordType;
+  // final PasswordType passwordType;
   final DateTime createdAt;
   final String passwordLength;
   final int? id;
+  PasswordType? passwordTypeIcon;
   PasswordData1({
     required this.title,
     required this.username,
@@ -146,26 +150,51 @@ class PasswordData1 {
     this.id,
   });
 
+  T toEnumValue<T>(String data, {required List<T> values}) {
+    return values.firstWhere((T value) => describeEnum(value!) == data,
+        orElse: () => values.firstWhere(
+              (T value) => describeEnum(value!) == "unknown",
+            ));
+  }
+
+  List<T> toEnumValueList<T>(
+    List<String> dataList, {
+    required List<T> values,
+  }) {
+    return dataList
+        .map(
+          (String data) => toEnumValue(data, values: values),
+        )
+        .toList();
+  }
+
   PasswordData1.fromJsonMap(Map<String, dynamic> map)
       : id = map['id'] as int,
         title = map['title'] as String,
         password = map['password'] as String,
         username = map['username'] as String,
-        passwordType = map['passwordType'] as String,
+        passwordType = describeEnum(map['passwordType']) as String,
         createdAt =
             DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
         passwordLength = map['passwordLength'] as String;
 
 // convert input into this
-  Map<String, dynamic> toJsonMap() => {
-        'id': id,
-        'title': title,
-        'username': username,
-        'password': password,
-        'passwordType': password,
-        'createdAt': createdAt.millisecondsSinceEpoch,
-        'passwordLength': passwordLength
-      };
+  Map<String, dynamic> toJsonMap() {
+    print("my data is:$this");
+    return {
+      'id': id,
+      'title': title,
+      'username': username,
+      'password': password,
+      'passwordType': passwordType,
+      'createdAt': createdAt.millisecondsSinceEpoch,
+      'passwordTypeIcon': toEnumValue(
+        passwordType,
+        values: PasswordType.values,
+      ) as PasswordType,
+      'passwordLength': passwordLength
+    };
+  }
 }
 
 class Dog {

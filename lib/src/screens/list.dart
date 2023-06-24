@@ -61,8 +61,9 @@ class DataListScreen extends StatelessWidget {
         childrenPadding: const EdgeInsets.only(left: 32, top: 16, bottom: 16),
         collapsedIconColor: Colors.green,
         iconColor: Colors.lightBlue,
-        // leading: getIconForType(password.passwordType),
-        leading: Icon(Icons.home),
+        leading: getIconForType(password.toEnumValue(password.passwordType,
+            values: PasswordType.values)),
+        // leading: getIconForType(password.passwordTypeIcon),
         title: Text(password.title),
         // trailing: IconButton(
         //   icon: const Icon(Icons.delete),

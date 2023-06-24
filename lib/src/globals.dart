@@ -10,6 +10,7 @@ const githubUrl = "githubUrl";
 const website = "mysite";
 
 getIconForType(PasswordType type) {
+  print("recived $type");
   switch (type) {
     case PasswordType.email:
       return const Icon(Icons.email);
@@ -22,6 +23,8 @@ getIconForType(PasswordType type) {
       return const Icon(Icons.verified_user);
     case PasswordType.website:
       return const Icon(Icons.web_sharp);
+    case PasswordType.unknown:
+      return const Icon(Icons.undo);
     default:
       return const Icon(Icons.verified_user_sharp);
   }
@@ -33,6 +36,7 @@ enum PasswordType {
   username,
   android,
   ios,
+  unknown,
 }
 
 class PasswordData {

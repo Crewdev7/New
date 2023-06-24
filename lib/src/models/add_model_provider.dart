@@ -51,7 +51,7 @@ class Sources extends ChangeNotifier {
 
   bool isChecked(field) {
     if (kDebugMode) {
-      print("IsChekched from add model Rendered again is this normal::::??");
+      // print("IsChekched from add model Rendered again is this normal::::??");
       print("ischecked recive: f$field");
     }
     if (field == "uppercase") {
@@ -73,6 +73,7 @@ class Sources extends ChangeNotifier {
   }
 
   bool toggleSource(String keyname, bool val) {
+    print("toggleSource is called with value keyname:$keyname, val:$val");
     bool isTrue;
     switch (keyname) {
       case "uppercase":
@@ -146,16 +147,21 @@ class InputDataProvider extends ChangeNotifier {
   }
 
   String _title = "";
+  int titL = 0;
   String get title => _title;
   set title(String value) {
     _title = value;
+    print("title is rederind");
+    titL = title.length;
 
+    notifyListeners();
   }
 
   String _username = "";
   String get username => _username;
   set username(String value) {
     _username = value;
+    print("username is rederind");
     usernameLength = value.length;
     notifyListeners();
   }
@@ -163,9 +169,11 @@ class InputDataProvider extends ChangeNotifier {
   String _password = "";
   String get password => _password;
   set password(String value) {
+    print("password is rederind");
     _password = "";
     _password = value;
     passwordLength = _password.length;
+    print("password is rederind");
     notifyListeners();
   }
 
