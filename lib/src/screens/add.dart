@@ -16,22 +16,6 @@ class AddScreen extends StatefulWidget {
 class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
-    // var username = userInputData.username;
-
-// to keep state while screen switching
-    // _userfieldController.text = username;
-    // _titlefieldController.text = usernameTitle;
-    //
-    // _customCharController.text = boxstate.customChars;
-    //
-    // // This fix cursor moving to front
-    // _passwordController.selection = TextSelection.fromPosition(
-    // _userfieldController.selection = TextSelection.fromPosition(
-    //     TextPosition(offset: _userfieldController.text.length));
-    //
-    // _titlefieldController.selection = TextSelection.fromPosition(
-    //     TextPosition(offset: _titlefieldController.text.length));
-
     return MyScaffold(
       appBarTitle: "Dashboard",
       body: SingleChildScrollView(
@@ -40,9 +24,7 @@ class _AddScreenState extends State<AddScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Dropdown menu for type selection
-            const TypeDropdown(
-              label: "Type",
-            ),
+            const TypeDropdown(label: "Type"),
             const SizedBox(height: 20),
 
             ...[
@@ -85,10 +67,7 @@ class _AddScreenState extends State<AddScreen> {
                         value: context.select(
                             (Sources p) => p.getPasswordLimit.toDouble()),
                         onChanged: (v) {
-                          var source = context.read<Sources>();
-                          source.getSource();
-                          context.read<InputDataProvider>().generatedPassword(
-                              source.source, source.getPasswordLimit);
+                          context.read<Sources>().setPasswordLimit = v.toInt();
                         }),
                   ),
                   // Text(getPasswordLimit.toString()),
@@ -385,10 +364,10 @@ class CusInputTextFieldd extends StatelessWidget {
     }
   }
 
-  Widget builtTextField(
-      BuildContext context, String text, void Function(String) onChanged) {
+  Widget builtTextField(BuildContext context, TextEditingController text,
+      void Function(String) onChanged) {
     return TextField(
-      controller: TextEditingController(text: text),
+      controller: text,
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: getLabel(),
@@ -399,7 +378,7 @@ class CusInputTextFieldd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var txtCntl = TextEditingController();
+    final txtCntl = TextEditingController();
     return Consumer<InputDataProvider>(builder: (context, inputData, _) {
       void Function(String) onChanged = (v) {};
 
@@ -422,7 +401,9 @@ class CusInputTextFieldd extends StatelessWidget {
         default:
           break;
       }
-      return builtTextField(context, txtCntl.text, onChanged);
+      txtCntl.selection =
+          TextSelection.fromPosition(TextPosition(offset: txtCntl.text.length));
+      return builtTextField(context, txtCntl, onChanged);
     });
   }
 }
