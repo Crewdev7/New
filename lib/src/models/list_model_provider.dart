@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -24,6 +25,16 @@ class DataListProvider extends ChangeNotifier {
       notifyListeners();
       return id;
     });
+  }
+
+  final _memoizer = AsyncMemoizer();
+
+  Future<bool> asyncInit(context) async {
+    await _memoizer.runOnce(() async {
+      await context.read<DatabaseHelper>().initDatabase();
+      await context.read<DatabaseHelper>()._getEntries();
+    });
+    return true;
   }
 
   Future<bool> getEntries() async {
@@ -71,11 +82,11 @@ class DatabaseHelper {
     if (_database != null) {
       return _database!;
     }
-    _database = await initDatabase;
+    await initDatabase;
     return _database!;
   }
 
-  Future<Database> get initDatabase async {
+  Future<void> get initDatabase async {
     final databasesPath = await getDatabasesPath();
     if (!await Directory(databasesPath).exists()) {
       await Directory(databasesPath).create(recursive: true);
@@ -83,7 +94,7 @@ class DatabaseHelper {
     final path = join(databasesPath, "oeoooeoooo.db");
     print("daatbase path:$path");
 
-    return await openDatabase(
+    _database = await openDatabase(
       path,
       version: 1,
       onCreate: (db, version) {

@@ -38,9 +38,7 @@ class _InitScreenState extends State<InitScreen> {
   //     // );
   //     context.read<Sources>().initPref().then((value) {
   //       print("shared pred init");
-  //       setState(() {
-  //         isok = true;
-  //       });
+  //       kok = true;
   //     }).catchError((e) {
   //       print("You have error for initPref: $e");
   //     });
