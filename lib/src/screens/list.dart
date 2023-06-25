@@ -29,7 +29,7 @@ class DataListScreen extends StatelessWidget {
           ),
           Expanded(
             child: FutureBuilder<bool>(
-                future: dataProvider.asyncInit(context),
+                future: dataProvider.asyncInit(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.data == false) {
                     return const Center(

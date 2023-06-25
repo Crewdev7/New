@@ -27,13 +27,14 @@ class DataListProvider extends ChangeNotifier {
     });
   }
 
-  final _memoizer = AsyncMemoizer();
-
-  Future<bool> asyncInit(context) async {
+  Future<bool> asyncInit() async {
+    final _memoizer = AsyncMemoizer();
     await _memoizer.runOnce(() async {
-      await context.read<DatabaseHelper>().initDatabase();
-      await context.read<DatabaseHelper>()._getEntries();
+      await _databaseHelper.initDatabase;
+      await getEntries();
     });
+    notifyListeners();
+
     return true;
   }
 
