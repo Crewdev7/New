@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:password_manager/src/models/add_model_provider.dart';
+import 'package:password_manager/src/models/list_model_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../globals.dart';
@@ -130,7 +131,9 @@ class _AddScreenState extends State<AddScreen> {
                 child: FloatingActionButton(
                   onPressed: () {
                     print("add");
-                    // dataProvider.add(userInputData.getInputData);
+                    context
+                        .read<DataListProvider>()
+                        .add(context.read<InputDataProvider>().getInputData);
                   },
                   child: const Text("Add"),
                 ),

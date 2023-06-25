@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -21,25 +20,14 @@ class DataListProvider extends ChangeNotifier {
   }
 
   Future<int> add(PasswordData userData) async {
-    return await _databaseHelper.insertEntry(userData).then((id) {
+    return await DatabaseHelper.insertEntry("mylist", userData).then((id) {
       notifyListeners();
       return id;
     });
   }
 
-  Future<bool> asyncInit() async {
-    final _memoizer = AsyncMemoizer();
-    await _memoizer.runOnce(() async {
-      await _databaseHelper.initDatabase;
-      await getEntries();
-    });
-    notifyListeners();
-
-    return true;
-  }
-
   Future<bool> getEntries() async {
-    final entries = await _databaseHelper.getEntries();
+    final entries = await DatabaseHelper.getEntries();
     _passwords.clear();
     _passwords.addAll(
         entries.map((json) => PasswordData1.fromJsonMap(json)).toList());
@@ -61,21 +49,7 @@ class DatabaseHelper {
   factory DatabaseHelper() => _instance;
 
   static Database? _database;
-  static String? _tabelName;
-
-  String get tabelname {
-    if (_tabelName != null) {
-      return _tabelName!;
-    }
-    tabelname = "defaultpass";
-    // maybe can  remove but had issue  if so
-    // ignore: recursive_getters
-    return tabelname;
-  }
-
-  set tabelname(String val) {
-    _tabelName = val;
-  }
+  static const String _tabelName = "mylist";
 
   DatabaseHelper.internal();
 
@@ -87,20 +61,17 @@ class DatabaseHelper {
     return _database!;
   }
 
-  Future<void> get initDatabase async {
+  static Future<Database> initDatabase() async {
     final databasesPath = await getDatabasesPath();
-    if (!await Directory(databasesPath).exists()) {
-      await Directory(databasesPath).create(recursive: true);
-    }
-    final path = join(databasesPath, "oeoooeoooo.db");
+    final path = join(databasesPath, "ok.db");
     print("daatbase path:$path");
 
-    _database = await openDatabase(
+    return _database = await openDatabase(
       path,
       version: 1,
       onCreate: (db, version) {
         db.execute('''
-              CREATE TABLE IF NOT EXISTS $tabelname(
+              CREATE TABLE IF NOT EXISTS $_tabelName(
               id INTEGER PRIMARY KEY,
               title TEXT,
               username TEXT,
@@ -113,24 +84,24 @@ class DatabaseHelper {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getEntries() async {
-    final db = await database;
-    return db.query(tabelname);
+  static Future<List<Map<String, dynamic>>> getEntries() async {
+    final db = await DatabaseHelper.initDatabase();
+    return await db.query(_tabelName);
   }
 
-  Future<int> insertEntry(PasswordData data) async {
-    final db = await database;
-    return await db.insert(tabelname, data.toMap());
+  static Future insertEntry(String table, PasswordData data) async {
+    final db = await DatabaseHelper.initDatabase();
+    return await db.insert(table, data.toMap());
   }
 
   Future<int> deleteEntry(int id) async {
     final db = await database;
-    return await db.delete(tabelname, where: "id = ?", whereArgs: [id]);
+    return await db.delete(_tabelName, where: "id = ?", whereArgs: [id]);
   }
 
   Future<PasswordData1?> getEntry(int id) async {
     final db = await database;
-    final result = await db.query(tabelname, where: "id = ?", whereArgs: [id]);
+    final result = await db.query(_tabelName, where: "id = ?", whereArgs: [id]);
 
     if (result.isNotEmpty) {
       result.map((json) => PasswordData1.fromJsonMap(json)).toList();

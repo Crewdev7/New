@@ -29,9 +29,11 @@ class DataListScreen extends StatelessWidget {
           ),
           Expanded(
             child: FutureBuilder<bool>(
-                future: dataProvider.asyncInit(),
+                future: dataProvider.getEntries(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data == false) {
+                  if (!snapshot.hasData ||
+                      snapshot.data == null ||
+                      snapshot.data == false) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
