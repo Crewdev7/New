@@ -35,9 +35,7 @@ void setupWindow() {
 }
 
 Future main() async {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
-  await DatabaseHelper.internal().initDatabase;
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
