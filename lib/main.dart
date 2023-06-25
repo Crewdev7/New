@@ -35,7 +35,8 @@ void setupWindow() {
 }
 
 Future main() async {
-
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
@@ -70,7 +71,15 @@ class PasswordManagerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var themeData = Provider.of<AppProvider>(context);
     themeData.loadTheme();
-
+    var settingz = Provider.of<Sources>(context);
+    settingz.initPref().then(
+      (value) {
+        print("successfully called init");
+      },
+    ).onError((error, stackTrace) {
+      print("you got error while initialization of init error:$error");
+      // print("Stacktrace is::$stackTrace");
+    });
     return FocusScope(
       child: MaterialApp(
         // theme Provider

@@ -1,0 +1,100 @@
+
+
+class CusInputTextFieldd extends StatelessWidget {
+  final InpputField fields;
+
+  const CusInputTextFieldd(Key? key, {required this.fields}) : super(key: key);
+
+  String getLabel() {
+    switch (fields) {
+      case InpputField.username:
+        return 'Username';
+      case InpputField.password:
+        return "Password";
+      case InpputField.title:
+        return "Title";
+      default:
+        return "Unkown";
+    }
+  }
+
+  Icon? getLeadingIcon() {
+    switch (fields) {
+      case InpputField.password:
+        return const Icon(Icons.password);
+      case InpputField.title:
+        return const Icon(Icons.title);
+
+      default:
+        return const Icon(Icons.question_mark);
+    }
+  }
+
+  void Function(String) getOnChanged(
+    BuildContext context,
+  ) {
+    final inpuData = context.read<InputDataProvider>();
+
+    switch (fields) {
+      case InpputField.username:
+        return (v) {
+          inpuData.username = v;
+        };
+      case InpputField.title:
+        return (v) {
+          inpuData.title = v;
+        };
+      case InpputField.password:
+        return (v) {
+          inpuData.password = v;
+        };
+      default:
+        return (v) {};
+    }
+  }
+
+  Widget builtTextField(BuildContext context, TextEditingController text,
+      void Function(String) onChanged) {
+    return TextField(
+      controller: text,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: getLabel(),
+        prefixIcon: getLeadingIcon(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final txtCntl = TextEditingController();
+    void Function(String) onChanged = (v) {};
+
+    switch (fields) {
+      case InpputField.username:
+        txtCntl.text = context.select((InputDataProvider p) => p.username);
+        onChanged = getOnChanged(context);
+        break;
+
+      case InpputField.title:
+        txtCntl.text = context.select((InputDataProvider p) => p.title);
+        onChanged = getOnChanged(context);
+        break;
+
+      case InpputField.password:
+        txtCntl.text = context.select((InputDataProvider p) => p.password);
+        onChanged = getOnChanged(context);
+        break;
+      default:
+        break;
+    }
+    print("inside text field field:$fields,");
+    txtCntl.selection =
+        TextSelection.fromPosition(TextPosition(offset: txtCntl.text.length));
+    return builtTextField(context, txtCntl, onChanged);
+  }
+}
+
+
+
+ 

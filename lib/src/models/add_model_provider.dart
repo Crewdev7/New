@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:password_manager/src/screens/add.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
@@ -13,12 +14,12 @@ class Sources extends ChangeNotifier {
   bool lowercase = true;
   bool number = true;
   bool special = true;
-  bool custom = false;
+  bool custom = true;
 
   final letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   final numbers = 1234567890;
   final specialChars = "~`!@#\$%^&*(){}/?+=-_|\\::\"";
-  String customChars = "";
+  String customChars = "23t";
 
   int _passwordLimit = 8;
   int get getPasswordLimit => _passwordLimit;
@@ -48,31 +49,38 @@ class Sources extends ChangeNotifier {
     }
     notifyListeners();
   }
+  //
+  // bool isChecked(field) {
+  //   if (kDebugMode) {
+  //     // print("IsChekched from add model Rendered again is this normal::::??");
+  //     print("ischecked recive: f$field");
+  //   }
+  //   if (field == "uppercase") {
+  //     return uppercase;
+  //   }
+  //   if (field == "lowercase") {
+  //     return lowercase;
+  //   }
+  //   if (field == "special") {
+  //     return special;
+  //   }
+  //   if (field == "number") {
+  //     return number;
+  //   }
+  //   if (field == "custom") {
+  //     return custom;
+  //   }
+  //   return false;
+  // }
 
-  bool isChecked(field) {
-    if (kDebugMode) {
-      // print("IsChekched from add model Rendered again is this normal::::??");
-      print("ischecked recive: f$field");
-    }
-    if (field == "uppercase") {
-      return uppercase;
-    }
-    if (field == "lowercase") {
-      return lowercase;
-    }
-    if (field == "special") {
-      return special;
-    }
-    if (field == "number") {
-      return number;
-    }
-    if (field == "custom") {
-      return custom;
-    }
-    return false;
+  void addCustomChars(String keyname, String val) {
+    setPrefs(key: keyname, value: val, isStr: true)
+        .then((value) =>
+            print("Prefs.  set succefuly for custom chars#$customChars"))
+        .catchError((e) => print("Unable  to set Prefs.$e"));
   }
 
-  bool toggleSource(String keyname, bool val) {
+  void toggleSource(String keyname, bool val) {
     print("toggleSource is called with value keyname:$keyname, val:$val");
     bool isTrue;
     switch (keyname) {
@@ -99,9 +107,8 @@ class Sources extends ChangeNotifier {
     notifyListeners();
 
     setPrefs(key: keyname, value: val, isBool: true)
-        .then((value) => print("Prefs.  set succefuly"))
+        .then((value) => print("Prefs.  set succefuly for bool"))
         .catchError((e) => print("Unable  to set Prefs.$e"));
-    return isTrue;
   }
 
   set setPasswordLimit(int value) {
@@ -109,10 +116,20 @@ class Sources extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> initPref(keyname) async {
+  Future<void> initPref() async {
     final prefs = await SharedPreferences.getInstance();
-    keyname = prefs.getBool(keyname)!;
-    notifyListeners();
+    try {
+      uppercase = await prefs!.getBool(describeEnum(CheckboxField.uppercase))!;
+      lowercase = await prefs!.getBool(describeEnum(CheckboxField.lowercase))!;
+      number = await prefs!.getBool(describeEnum(CheckboxField.number))!;
+      special = await prefs!.getBool(describeEnum(CheckboxField.special))!;
+      custom = await prefs!.getBool(describeEnum(CheckboxField.custom))!;
+      customChars =
+          await prefs!.getString(describeEnum(CheckboxField.customChars))!;
+      // notifyListeners();
+    } catch (e) {
+      print("hi iam throwing error:value:$e");
+    }
   }
 
   Future<void> setPrefs(
@@ -132,6 +149,7 @@ class Sources extends ChangeNotifier {
       if (isStr) {
         await prefs.setString(key, value);
       }
+      print("Setting prefs done for key:$key,value:$value");
     } catch (e) {
       throw Error.safeToString(e);
     }

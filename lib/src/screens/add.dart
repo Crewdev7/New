@@ -80,36 +80,7 @@ class _AddScreenState extends State<AddScreen> {
               const Column(
                 children: [
                   Card(
-                    child: CustomCheckboxTile(
-                      field: CheckboxField.uppercase,
-                      text: "Uppercase",
-                      subtitle: "eg:  ABC..YZ",
-                      keyname: "uppercase",
-                    ),
-                  ),
-                  Card(
-                    child: CustomCheckboxTile(
-                      field: CheckboxField.lowercase,
-                      text: "Lowercase",
-                      subtitle: "eg:  abc..yz",
-                      keyname: "lowercase",
-                    ),
-                  ),
-                  Card(
-                    child: CustomCheckboxTile(
-                      field: CheckboxField.number,
-                      text: "Numbers",
-                      subtitle: "eg:  1234567890",
-                      keyname: "number",
-                    ),
-                  ),
-                  Card(
-                    child: CustomCheckboxTile(
-                      field: CheckboxField.special,
-                      text: "Special chars.",
-                      subtitle: "eg:  `~!@#\$%^&*(){}|+?_/-_...",
-                      keyname: "special",
-                    ),
+                    child: CustomCheckboxTile(),
                   ),
                   Divider(),
                   // Row(
@@ -201,76 +172,98 @@ enum CheckboxField {
   number,
   special,
   custom,
+  customChars,
 }
 
-class CustomCheckboxTile extends StatelessWidget {
-  final String text;
-  final String subtitle;
-  final String keyname;
+final checkboxesData = [
+  {
+    "field": CheckboxField.uppercase,
+    "text": "Uppercase",
+    "subtitle": "eg: ABC..YZ",
+  },
+  {
+    "field": CheckboxField.lowercase,
+    "text": "Lowercase",
+    "subtitle": "eg: abc..yz",
+  },
+  {
+    "field": CheckboxField.number,
+    "text": "Number",
+    "subtitle": "eg: 1234567890",
+  },
+  {
+    "field": CheckboxField.special,
+    "text": "Special",
+    "subtitle": "eg: !~@#%^&*(){}",
+  },
+  {
+    "field": CheckboxField.custom,
+    "text": "Custom",
+    "subtitle": "eg: Your words here",
+  },
+];
 
-  final CheckboxField field;
+class CustomCheckboxTile extends StatelessWidget {
+  // final String keyname;
+
+  // final CheckboxField field;
 
   const CustomCheckboxTile({
     super.key,
-    required this.field,
-    required this.text,
-    required this.subtitle,
-    required this.keyname,
+    // required this.keyname,
   });
+
+  void handleCheckboxChanged(
+      BuildContext context, CheckboxField field, bool value) {
+    final data = context.read<Sources>().toggleSource;
+
+    data(field.toString(), value);
+  }
+
+  bool isChecked(BuildContext context, CheckboxField field) {
+    switch (field) {
+      case CheckboxField.uppercase:
+        return context.select((Sources p) => p.uppercase);
+      case CheckboxField.lowercase:
+        return context.select((Sources p) => p.lowercase);
+      case CheckboxField.number:
+        return context.select((Sources p) => p.number);
+      case CheckboxField.custom:
+        return context.select((Sources p) => p.special);
+      case CheckboxField.special:
+        return context.select((Sources p) => p.custom);
+      default:
+        return context.select((Sources p) => p.lowercase);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final data = context.read<Sources>();
-    final watchedData = context.watch<Sources>();
-    bool isChecked = false;
-    Function(bool?)? onChanged = (v) {};
+    return ListView.builder(
+        itemCount: checkboxesData.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Builder(builder: (context) {
+            final checkbox = checkboxesData[index];
+            final field = checkbox['field'] as CheckboxField;
 
-    switch (field) {
-      case CheckboxField.uppercase:
-        isChecked = context.select((Sources p) => p.uppercase);
-        onChanged = (value) {
-          data.toggleSource(keyname, value!);
-          // watchedData.uppercase = value!;
-        };
-        break;
-      case CheckboxField.lowercase:
-        isChecked = watchedData.lowercase;
-        onChanged = (value) {
-          data.toggleSource(keyname, value!);
-        };
-        break;
-      case CheckboxField.number:
-        isChecked = watchedData.number;
-        onChanged = (value) {
-          data.toggleSource(keyname, value!);
-        };
-        break;
-      case CheckboxField.custom:
-        isChecked = data.custom;
-        onChanged = (value) {
-          data.toggleSource(keyname, value!);
-        };
-        break;
-      case CheckboxField.special:
-        isChecked = data.special;
-        onChanged = (value) {
-          data.toggleSource(keyname, value!);
-        };
-        break;
-      default:
-        isChecked = data.special;
-        onChanged = (value) {
-          data.toggleSource(keyname, value!);
-        };
-        break;
-    }
+            final text = checkbox['text'] as String;
+            final subtitle = checkbox['subtitle'] as String;
+            bool isCheckede = false;
 
-    return CheckboxListTile(
-      onChanged: onChanged,
-      value: isChecked,
-      title: Text(text),
-      subtitle: Text(subtitle),
-    );
+            isCheckede = isChecked(context, field);
+            final keyname = describeEnum(field);
+
+            print("inside listvied field:$field");
+            return CheckboxListTile(
+              onChanged: (val) =>
+                  context.read<Sources>().toggleSource(keyname, val!),
+              value: isCheckede,
+              title: Text(text),
+              subtitle: Text(subtitle),
+            );
+          });
+        });
   }
 }
 

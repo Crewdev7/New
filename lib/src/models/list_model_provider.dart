@@ -27,7 +27,7 @@ class DataListProvider extends ChangeNotifier {
     });
   }
 
-  Future<bool> get getEntries async {
+  Future<bool> getEntries() async {
     final entries = await _databaseHelper.getEntries();
     _passwords.clear();
     _passwords.addAll(
@@ -82,6 +82,7 @@ class DatabaseHelper {
       await Directory(databasesPath).create(recursive: true);
     }
     final path = join(databasesPath, "oeoooeoooo.db");
+    print("daatbase path:$path");
 
     return await openDatabase(
       path,
