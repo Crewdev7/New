@@ -228,12 +228,13 @@ class CustomCheckboxTile extends StatelessWidget {
         return context.select((Sources p) => p.lowercase);
       case CheckboxField.number:
         return context.select((Sources p) => p.number);
-      case CheckboxField.custom:
-        return context.select((Sources p) => p.special);
       case CheckboxField.special:
+        return context.select((Sources p) => p.special);
+      case CheckboxField.custom:
         return context.select((Sources p) => p.custom);
       default:
-        return context.select((Sources p) => p.lowercase);
+        // return context.select((Sources p) => p.lowercase);
+        return false;
     }
   }
 

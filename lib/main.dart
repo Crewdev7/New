@@ -13,7 +13,6 @@ import 'src/models/theme_provider.dart';
 import 'src/screens/init.dart';
 import 'src/screens/setting.dart';
 
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 const double windowWidth = 480;
 const double windowHeight = 854;
@@ -35,8 +34,8 @@ void setupWindow() {
 }
 
 Future main() async {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
+  // sqfliteFfiInit();
+  // databaseFactory = databaseFactoryFfi;
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
@@ -71,15 +70,8 @@ class PasswordManagerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var themeData = Provider.of<AppProvider>(context);
     themeData.loadTheme();
-    var settingz = Provider.of<Sources>(context);
-    settingz.initPref().then(
-      (value) {
-        print("successfully called init");
-      },
-    ).onError((error, stackTrace) {
-      print("you got error while initialization of init error:$error");
-      // print("Stacktrace is::$stackTrace");
-    });
+    var settingz = context.read<Sources>();
+    settingz.initPref();
     return FocusScope(
       child: MaterialApp(
         // theme Provider

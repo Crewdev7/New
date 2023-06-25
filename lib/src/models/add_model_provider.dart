@@ -119,13 +119,27 @@ class Sources extends ChangeNotifier {
   Future<void> initPref() async {
     final prefs = await SharedPreferences.getInstance();
     try {
-      uppercase = await prefs!.getBool(describeEnum(CheckboxField.uppercase))!;
-      lowercase = await prefs!.getBool(describeEnum(CheckboxField.lowercase))!;
-      number = await prefs!.getBool(describeEnum(CheckboxField.number))!;
-      special = await prefs!.getBool(describeEnum(CheckboxField.special))!;
-      custom = await prefs!.getBool(describeEnum(CheckboxField.custom))!;
-      customChars =
-          await prefs!.getString(describeEnum(CheckboxField.customChars))!;
+      var ok =prefs.getKeys();
+      print("ok#$ok");
+      // uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) as bool
+      //     ? true
+      //     : false;
+      // lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) as bool
+      //     ? true
+      //     : false;
+      // number = prefs!.getBool(describeEnum(CheckboxField.number)) as bool
+      //     ? true
+      //     : false;
+      // special = prefs.getBool(describeEnum(CheckboxField.special)) as bool
+      //     ? true
+      //     : false;
+      // custom = prefs.getBool(describeEnum(CheckboxField.custom)) as bool
+      //     ? true
+      //     : false;
+      // customChars =
+      //     prefs.getString(describeEnum(CheckboxField.customChars)) == null
+      //         ? "eouoeu"
+      //         : "ohohooho";
       // notifyListeners();
     } catch (e) {
       print("hi iam throwing error:value:$e");
