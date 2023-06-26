@@ -32,6 +32,7 @@ void setupWindow() {
       ));
     });
     sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
   }
 }
 
@@ -43,7 +44,6 @@ Future<bool> loadTheme2() async {
 
 Future main() async {
   setupWindow();
-  databaseFactory = databaseFactoryFfi;
   // init themes and pass  to provider for now
 
   bool isDark;
