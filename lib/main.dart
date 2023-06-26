@@ -43,12 +43,11 @@ Future<bool> loadTheme2() async {
 }
 
 Future main() async {
-  setupWindow();
+  
   // init themes and pass  to provider for now
 
   bool isDark;
   isDark = await loadTheme2();
-
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
@@ -66,6 +65,7 @@ Future main() async {
     ],
     child: const PasswordManagerApp(),
   ));
+setupWindow();
 }
 
 class PasswordManagerApp extends StatefulWidget {
