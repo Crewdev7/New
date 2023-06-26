@@ -10,12 +10,26 @@ import '../utils/mix.dart';
 class AddScreen extends StatelessWidget {
   const AddScreen({super.key});
 
+  void fetchData(context) {
+    final dataProvider = Provider.of<Sources>(context, listen: false);
+    dataProvider.initPref().then((success) {
+      if (success) {
+        print("init pref is success");
+        writeToLogFile("init data fatched success");
+      }
+    }).onError((error, stackTrace) {
+      print("you have eerror while intialization of Sources");
+      writeToLogFile("you have eerror while intialization of Sources");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    fetchData(context);
     return MyScaffold(
       appBarTitle: "Dashboard",
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -29,7 +43,7 @@ class AddScreen extends StatelessWidget {
               const CusInputTextFieldd(Key("username"),
                   fields: InpputField.username),
 
-              const CusInputTextFieldd(Key("poassword"),
+              const CusInputTextFieldd(Key("password"),
                   fields: InpputField.password),
 
               Center(
@@ -45,7 +59,7 @@ class AddScreen extends StatelessWidget {
                           context.read<Sources>().setPasswordLimit = v.toInt();
                         }),
                   ),
-                  // Text(getPasswordLimit.toString()),
+                  Text(context.read<Sources>().getPasswordLimit.toString()),
                 ],
               )),
               //Buttons
@@ -54,7 +68,6 @@ class AddScreen extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      print("add");
                       context
                           .read<DataListProvider>()
                           .add(context.read<InputDataProvider>().getInputData);
@@ -64,14 +77,17 @@ class AddScreen extends StatelessWidget {
                   const SizedBox(
                     width: 30,
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        var source = context.read<Sources>();
-                        source.getSource();
-                        context.read<InputDataProvider>().generatedPassword(
-                            source.source, source.getPasswordLimit);
-                      },
-                      child: const Text("Passy")),
+                  Transform.scale(
+                    scale: 1.4,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          var source = context.read<Sources>();
+                          source.getSource();
+                          context.read<InputDataProvider>().generatePassword(
+                              source.source, source.getPasswordLimit);
+                        },
+                        child: const Text("Passy")),
+                  ),
                   const SizedBox(
                     width: 30,
                   ),
@@ -83,33 +99,20 @@ class AddScreen extends StatelessWidget {
 // Move state up maybe
               const Column(
                 children: [
-                  Card(
-                    child: CustomCheckboxTile(),
-                  ),
+                  CustomCheckboxTile(),
                   Divider(),
-                  // Row(
-                  //   children: [
-                  //     const Text("Include custom charaters:",
-                  //         style: TextStyle(fontSize: 20)),
-                  //     Switch(
-                  //         value: boxstate.custom,
-                  //         onChanged: (v) {
-                  //           boxstate.toggleSource('custom', v);
-                  //         })
-                  //   ],
-                  // ),
-                  // boxstate.custom
-                  //     ? TextField(
-                  //         maxLines: 5,
-                  //         minLines: 1,
-                  //         controller: _customCharController,
-                  //         onChanged: (value) {
-                  //           boxstate.customChars = value;
-                  //         },
-                  //         decoration: const InputDecoration(
-                  //             label: Text("Custom charaters/letters")),
-                  //       )
-                  //     : const Divider(),
+                  Row(
+                    children: [
+                      Text("Include custom charaters:",
+                          style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                  TextField(
+                    maxLines: 5,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                        label: Text("Custom charaters/letters")),
+                  ),
                   SizedBox(height: 20),
                 ],
               ),
@@ -133,6 +136,7 @@ enum CheckboxField {
   special,
   custom,
   customChars,
+  passwordLimit,
 }
 
 final checkboxesData = [
@@ -204,26 +208,29 @@ class CustomCheckboxTile extends StatelessWidget {
         itemCount: checkboxesData.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          return Builder(builder: (context) {
-            final checkbox = checkboxesData[index];
-            final field = checkbox['field'] as CheckboxField;
+          return Card(
+            elevation: 1,
+            child: Builder(builder: (context) {
+              final checkbox = checkboxesData[index];
+              final field = checkbox['field'] as CheckboxField;
 
-            final text = checkbox['text'] as String;
-            final subtitle = checkbox['subtitle'] as String;
-            bool isCheckede = false;
+              final text = checkbox['text'] as String;
+              final subtitle = checkbox['subtitle'] as String;
+              bool isCheckede = false;
 
-            isCheckede = isChecked(context, field);
-            final keyname = describeEnum(field);
+              isCheckede = isChecked(context, field);
+              final keyname = describeEnum(field);
 
-            print("inside listvied field:$field");
-            return CheckboxListTile(
-              onChanged: (val) =>
-                  context.read<Sources>().toggleSource(keyname, val!),
-              value: isCheckede,
-              title: Text(text),
-              subtitle: Text(subtitle),
-            );
-          });
+              print("inside listvied field:$field");
+              return CheckboxListTile(
+                onChanged: (val) =>
+                    context.read<Sources>().toggleSource(keyname, val!),
+                value: isCheckede,
+                title: Text(text),
+                subtitle: Text(subtitle),
+              );
+            }),
+          );
         });
   }
 }
@@ -365,18 +372,3 @@ class CusInputTextFieldd extends StatelessWidget {
     return builtTextField(context, txtCntl, onChanged);
   }
 }
-
-class eoa extends StatefulWidget {
-  eoa({Key? key}) : super(key: key);
-
-  @override
-  _eoaState createState() => _eoaState();
-}
-
-class _eoaState extends State<eoa> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-       child: CircularProgressIndicator()    );
-  }
-} 

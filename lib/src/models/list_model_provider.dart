@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +9,7 @@ class DataListProvider extends ChangeNotifier {
   List<PasswordData1> _passwords = [];
 
   final _databaseHelper = DatabaseHelper();
+  final tableName = DatabaseHelper.tableName;
   List<PasswordData1> get password {
     return _passwords;
   }
@@ -21,14 +19,16 @@ class DataListProvider extends ChangeNotifier {
   }
 
   Future<int> add(PasswordData userData) async {
-    return await DatabaseHelper.insertEntry("mylist", userData).then((id) {
-      writeToLogFile("adding entry to db with id:$id");
-
+    return await DatabaseHelper.insertEntry(tableName, userData).then((id) {
       notifyListeners();
       return id;
-    }).onError((error, stackTrace) {
-      writeToLogFile("we get error while adding entrie:$error");
-    });
+    }).onError((error, stackTrace) {});
+  }
+
+  Future<bool> remove(int id) async {
+    await DatabaseHelper.deleteEntry(id);
+    notifyListeners();
+    return true;
   }
 
   Future<bool> getEntries() async {
@@ -55,7 +55,7 @@ class DatabaseHelper {
   factory DatabaseHelper() => _instance;
 
   static Database? _database;
-  static const String _tabelName = "mylist";
+  static String get tableName => "mylist";
 
   DatabaseHelper.internal();
 
@@ -63,27 +63,21 @@ class DatabaseHelper {
     if (_database != null) {
       return _database!;
     }
-    await initDatabase;
+    initDatabase;
     return _database!;
   }
 
   static Future<Database> initDatabase() async {
     final databasesPath = await getDatabasesPath();
-    final secondPath = await getApplicationSupportDirectory();
-    final path2 = join(secondPath.path, "ok2.db");
+    // final secondPath = await getApplicationSupportDirectory();
     final path = join(databasesPath, "ok.db");
-    writeToLogFile("init database path: $path");
-    print("daatbase path:$path");
-    print("daatbase path2:$path2");
 
-    writeToLogFile("end initDatabase");
-    print("daatbase path:$path");
     return _database = await openDatabase(
       path,
       version: 1,
       onCreate: (db, version) {
         db.execute('''
-              CREATE TABLE IF NOT EXISTS $_tabelName(
+              CREATE TABLE IF NOT EXISTS $tableName(
               id INTEGER PRIMARY KEY,
               title TEXT,
               username TEXT,
@@ -98,7 +92,7 @@ class DatabaseHelper {
 
   static Future<List<Map<String, dynamic>>> getEntries() async {
     final db = await DatabaseHelper.initDatabase();
-    return await db.query(_tabelName);
+    return await db.query(tableName);
   }
 
   static Future insertEntry(String table, PasswordData data) async {
@@ -106,21 +100,25 @@ class DatabaseHelper {
     return await db.insert(table, data.toMap());
   }
 
-  Future<int> deleteEntry(int id) async {
-    final db = await database;
-    return await db.delete(_tabelName, where: "id = ?", whereArgs: [id]);
+  static Future<int> deleteEntry(int id) async {
+    final db = await DatabaseHelper.initDatabase();
+    return await db.delete(tableName, where: "id = ?", whereArgs: [id]);
   }
 
   Future<PasswordData1?> getEntry(int id) async {
-    final db = await database;
-    final result = await db.query(_tabelName, where: "id = ?", whereArgs: [id]);
+    final db = await DatabaseHelper.initDatabase();
+    final result =
+        await db.query(tableName, where: "id = ?", whereArgs: [id], limit: 1);
+    print("we get result: $result");
 
     if (result.isNotEmpty) {
-      result.map((json) => PasswordData1.fromJsonMap(json)).toList();
+      final result2 = PasswordData1.fromJsonMap(result.first);
+      print("web get result2=$result2");
+      // return result.map((json) PasswordData1
+      // .fromJsonMap(json));
     } else {
       return null;
     }
-    return null;
   }
 }
 
@@ -128,13 +126,11 @@ class PasswordData1 {
   final String password;
   final String title;
   final String username;
-  // Change it to  passwordType
   final String passwordType;
-  // final PasswordType passwordType;
   final DateTime createdAt;
   final String passwordLength;
   final int? id;
-  PasswordType? passwordTypeIcon;
+
   PasswordData1({
     required this.title,
     required this.username,
@@ -168,14 +164,13 @@ class PasswordData1 {
         title = map['title'] as String,
         password = map['password'] as String,
         username = map['username'] as String,
-        passwordType = describeEnum(map['passwordType']) as String,
+        passwordType = describeEnum(map['passwordType']),
         createdAt =
             DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
         passwordLength = map['passwordLength'] as String;
 
 // convert input into this
   Map<String, dynamic> toJsonMap() {
-    print("my data is:$this");
     return {
       'id': id,
       'title': title,
@@ -186,28 +181,8 @@ class PasswordData1 {
       'passwordTypeIcon': toEnumValue(
         passwordType,
         values: PasswordType.values,
-      ) as PasswordType,
+      ),
       'passwordLength': passwordLength
     };
-  }
-}
-
-class Dog {
-  final int id;
-  final String name;
-  final int age;
-  const Dog({required this.id, required this.name, required this.age});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'age': age,
-    };
-  }
-
-  @override
-  String toString() {
-    return "Dog{id:$id,name:$name,age:$age}";
   }
 }

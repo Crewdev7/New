@@ -79,9 +79,6 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Divider(
-              height: 1.0,
-            ),
             Card(
               elevation: 4,
               child: Column(
@@ -95,9 +92,6 @@ class AboutScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            const Divider(
-              height: 1.0,
             ),
             Card(
               elevation: 4,
@@ -113,9 +107,6 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Divider(
-              height: 1.0,
-            ),
             Card(
               elevation: 4,
               child: Column(
@@ -128,9 +119,6 @@ class AboutScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            const Divider(
-              height: 1.0,
             ),
             Card(
               elevation: 4,
@@ -145,9 +133,6 @@ class AboutScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            const Divider(
-              height: 1.0,
             ),
           ],
         ),

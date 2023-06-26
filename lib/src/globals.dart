@@ -13,7 +13,6 @@ const githubUrl = "githubUrl";
 const website = "mysite";
 
 getIconForType(PasswordType type) {
-  print("recived $type");
   switch (type) {
     case PasswordType.email:
       return const Icon(Icons.email);
@@ -84,7 +83,6 @@ class PasswordData {
 Future<void> writeToLogFile(String message) async {
   final directory = await getApplicationSupportDirectory();
   final filePath = File("${directory.path}/log.txt");
-
   try {
     await filePath.writeAsString("$message\n ", mode: FileMode.append);
   } catch (e) {

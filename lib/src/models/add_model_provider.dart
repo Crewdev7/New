@@ -40,22 +40,17 @@ class Sources extends ChangeNotifier {
     if (custom && customChars.isNotEmpty) {
       source += customChars.replaceAll(" ", "");
     }
-    if (kDebugMode) {
-      print("getSource in add model Rendered again is this normal::::??");
-      print("password sources are: $source");
-    }
-    notifyListeners();
+    // notifyListeners();
   }
 
   void addCustomChars(String keyname, String val) {
     setPrefs(key: keyname, value: val, isStr: true)
         .then((value) =>
             print("Prefs.  set succefuly for custom chars#$customChars"))
-        .catchError((e) => print("Unable  to set Prefs.$e"));
+        .catchError((e) => print("Unable  to set pref for custom char.$e"));
   }
 
   void toggleSource(String keyname, bool val) {
-    print("toggleSource is called with value keyname:$keyname, val:$val");
     bool isTrue;
     switch (keyname) {
       case "uppercase":
@@ -87,25 +82,41 @@ class Sources extends ChangeNotifier {
 
   set setPasswordLimit(int value) {
     _passwordLimit = value;
+    setPrefs(
+            key: describeEnum(CheckboxField.passwordLimit),
+            value: value,
+            isInt: true)
+        .then((success) {
+      print("password limit set success with value $value");
+      writeToLogFile("password limit set success with value $value");
+    }).onError((error, stackTrace) {
+      print("Error while setting password limit");
+      writeToLogFile("Error while setting password limit");
+    });
+
     notifyListeners();
   }
 
-  Future<void> initPref() async {
+  Future<bool> initPref() async {
     final prefs = await SharedPreferences.getInstance();
     try {
       var ok = prefs.getKeys();
-      print("ok#$ok");
+      print("initPref inside#$ok");
       uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) as bool;
       lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) as bool;
       number = prefs.getBool(describeEnum(CheckboxField.number)) as bool;
       special = prefs.getBool(describeEnum(CheckboxField.special)) as bool;
       custom = prefs.getBool(describeEnum(CheckboxField.custom)) as bool;
+      _passwordLimit =
+          prefs.getInt(describeEnum(CheckboxField.passwordLimit)) ?? 8;
       customChars =
-          prefs.getString(describeEnum(CheckboxField.customChars)) as String;
+          prefs.getString(describeEnum(CheckboxField.customChars)) ?? "";
+      // customChars="";
       notifyListeners();
+      return true;
     } catch (e) {
-      writeToLogFile("erro  from initpref :$e");
-      print("hi iam throwing error:value:$e");
+      writeToLogFile("error initPref :$e");
+      return false;
     }
   }
 
@@ -126,63 +137,53 @@ class Sources extends ChangeNotifier {
       if (isStr) {
         await prefs.setString(key, value);
       }
-      print("Setting prefs done for key:$key,value:$value");
     } catch (e) {
-      throw Error.safeToString(e);
+      print("setPrefs inside error : $e");
+      writeToLogFile("error setPrefs: $e");
     }
   }
 }
 
 class InputDataProvider extends ChangeNotifier {
   PasswordType _passwordType = PasswordType.username;
-
   PasswordType get passwordType => _passwordType;
+
   void spasswordType(PasswordType value) {
     _passwordType = value;
+    notifyListeners();
   }
 
   String _title = "";
-  int titL = 0;
   String get title => _title;
+
   set title(String value) {
     _title = value;
-    print("title is rederind");
-    titL = title.length;
-
     notifyListeners();
   }
 
   String _username = "";
   String get username => _username;
+
   set username(String value) {
     _username = value;
-    print("username is rederind");
-    usernameLength = value.length;
     notifyListeners();
   }
 
   String _password = "";
   String get password => _password;
+
   set password(String value) {
-    print("password is rederind");
     _password = "";
     _password = value;
     passwordLength = _password.length;
-    print("password is rederind");
     notifyListeners();
   }
 
   int _passwordLength = 0;
   int get passwordLength => _passwordLength;
+
   set passwordLength(int value) {
     _passwordLength = value;
-    notifyListeners();
-  }
-
-  int _usernameLength = 0;
-  int get usernameLength => _usernameLength;
-  set usernameLength(int value) {
-    _usernameLength = value;
     notifyListeners();
   }
 
@@ -191,10 +192,10 @@ class InputDataProvider extends ChangeNotifier {
     return pass[0].toUpperCase() + pass.substring(1);
   }
 
-  void generatedPassword(String source, int limit) {
+  void generatePassword(String source, int limit) {
     password = "";
     for (var i = 0; i < limit; i++) {
-      var rand = Random();
+      final rand = Random();
       password += source[rand.nextInt(source.length)];
     }
     passwordLength = password.length;
