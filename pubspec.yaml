@@ -25,9 +25,9 @@ dependencies:
   fluttertoast: any
   motion_toast: any
   cherry_toast: any
-  # sqlite3_flutter_libs: any
+  sqlite3_flutter_libs: any
   sqflite: any
-  sqflite_common_ffi: any
+#  sqflite_common_ffi: any
   path: any
   path_provider: any
   async: any

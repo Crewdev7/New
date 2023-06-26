@@ -365,3 +365,18 @@ class CusInputTextFieldd extends StatelessWidget {
     return builtTextField(context, txtCntl, onChanged);
   }
 }
+
+class eoa extends StatefulWidget {
+  eoa({Key? key}) : super(key: key);
+
+  @override
+  _eoaState createState() => _eoaState();
+}
+
+class _eoaState extends State<eoa> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+       child: CircularProgressIndicator()    );
+  }
+} 
