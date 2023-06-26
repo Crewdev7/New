@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/src/models/add_model_provider.dart';
 import 'package:password_manager/src/models/app_model_provider.dart';
+import 'package:password_manager/src/screens/about.dart';
 import 'package:password_manager/src/utils/mix.dart';
 import 'package:provider/provider.dart';
 
@@ -52,9 +53,13 @@ class SettingScreen extends StatelessWidget {
           const ListTile(
             title: Text("Backup and restore"),
           ),
-          const ListTile(
+          ListTile(
             title: Text("About"),
-          )
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (contexn) => AboutScreen()));
+            },
+          ),
         ]);
       }),
       //   body:

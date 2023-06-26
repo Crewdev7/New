@@ -53,25 +53,23 @@ Future main() async {
         create: (context) => Sources(),
       ),
     ],
-    child: const PasswordManagerApp(),
+    child: PasswordManagerApp(),
   ));
-
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  //     FlutterLocalNotificationsPlugin();
-  // const AndroidInitializationSettings initializationSettingsAndroid =
-  //     AndroidInitializationSettings("@mipmap/ic_launcher");
-  // final InitializationSettings initializationSettings =
-  //     InitializationSettings(android: initializationSettingsAndroid);
-  // await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
-class PasswordManagerApp extends StatelessWidget {
+class PasswordManagerApp extends StatefulWidget {
   const PasswordManagerApp({super.key});
+
+  @override
+  State<PasswordManagerApp> createState() => _PasswordManagerAppState();
+}
+
+class _PasswordManagerAppState extends State<PasswordManagerApp> {
+  AppProvider appState = new AppProvider();
 
   @override
   Widget build(BuildContext context) {
     var themeData = Provider.of<AppProvider>(context);
-    themeData.loadTheme();
 
     // var settingz = context.read<Sources>();
     // settingz.().then(

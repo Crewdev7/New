@@ -7,14 +7,9 @@ import 'package:provider/provider.dart';
 import '../globals.dart';
 import '../utils/mix.dart';
 
-class AddScreen extends StatefulWidget {
+class AddScreen extends StatelessWidget {
   const AddScreen({super.key});
 
-  @override
-  State<AddScreen> createState() => _AddScreenState();
-}
-
-class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
@@ -31,32 +26,11 @@ class _AddScreenState extends State<AddScreen> {
             ...[
               const CusInputTextFieldd(Key("title"), fields: InpputField.title),
 
-              Row(
-                children: [
-                  Text(
-                      "Title length: ${context.select((InputDataProvider p) => p.title.length)}"),
-                ],
-              ),
-
               const CusInputTextFieldd(Key("username"),
                   fields: InpputField.username),
 
-              Row(
-                children: [
-                  Text(
-                      "Username length: ${context.select((InputDataProvider p) => p.username.length)}"),
-                ],
-              ),
-
               const CusInputTextFieldd(Key("poassword"),
                   fields: InpputField.password),
-
-              Row(
-                children: [
-                  Text(
-                      "Password length: ${context.select((InputDataProvider p) => p.password.length)}"),
-                ],
-              ),
 
               Center(
                   child: Row(
@@ -74,7 +48,36 @@ class _AddScreenState extends State<AddScreen> {
                   // Text(getPasswordLimit.toString()),
                 ],
               )),
-
+              //Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      print("add");
+                      context
+                          .read<DataListProvider>()
+                          .add(context.read<InputDataProvider>().getInputData);
+                    },
+                    child: const Text("Add"),
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        var source = context.read<Sources>();
+                        source.getSource();
+                        context.read<InputDataProvider>().generatedPassword(
+                            source.source, source.getPasswordLimit);
+                      },
+                      child: const Text("Passy")),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  ElevatedButton(onPressed: () {}, child: const Text("Reset")),
+                ],
+              ),
               const Center(
                   child: Text("Include:", style: TextStyle(fontSize: 20))),
 // Move state up maybe
@@ -116,52 +119,6 @@ class _AddScreenState extends State<AddScreen> {
                     height: 20,
                   )
                 ]),
-          ],
-        ),
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Transform.scale(
-                scale: 1.3,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    print("add");
-                    context
-                        .read<DataListProvider>()
-                        .add(context.read<InputDataProvider>().getInputData);
-                  },
-                  child: const Text("Add"),
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 30,
-            ),
-            Transform.scale(
-              scale: 1.3,
-              child: ElevatedButton(
-                  onPressed: () {
-                    var source = context.read<Sources>();
-
-                    source.getSource();
-                    context.read<InputDataProvider>().generatedPassword(
-                        source.source, source.getPasswordLimit);
-                  },
-                  child: const Text("Passy")),
-            ),
-            const SizedBox(
-              width: 30,
-            ),
-            Transform.scale(
-              scale: 1.3,
-              child:
-                  ElevatedButton(onPressed: () {}, child: const Text("Reset")),
-            ),
           ],
         ),
       ),
@@ -341,7 +298,7 @@ class CusInputTextFieldd extends StatelessWidget {
   void Function(String) getOnChanged(
     BuildContext context,
   ) {
-    final inpuData = Provider.of<InputDataProvider>(context);
+    final inpuData = context.read<InputDataProvider>();
 
     switch (fields) {
       case InpputField.username:
@@ -363,58 +320,48 @@ class CusInputTextFieldd extends StatelessWidget {
 
   Widget builtTextField(BuildContext context, TextEditingController text,
       void Function(String) onChanged) {
-    return TextField(
-      controller: text,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: getLabel(),
-        prefixIcon: getLeadingIcon(),
-      ),
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: text,
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              labelText: getLabel(),
+              prefixIcon: getLeadingIcon(),
+            ),
+          ),
+        ),
+        Text(text.text.length.toString()),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final txtCntl = TextEditingController();
-    return Consumer<InputDataProvider>(builder: (context, inputData, _) {
-      void Function(String) onChanged = (v) {};
+    void Function(String) onChanged = (v) {};
 
-      switch (fields) {
-        case InpputField.username:
-          txtCntl.text = inputData.username;
-          onChanged = getOnChanged(context);
-          break;
+    switch (fields) {
+      case InpputField.username:
+        txtCntl.text = context.select((InputDataProvider p) => p.username);
+        onChanged = getOnChanged(context);
+        break;
 
-        case InpputField.title:
-          txtCntl.text = inputData.title;
-          onChanged = getOnChanged(context);
-          break;
+      case InpputField.title:
+        txtCntl.text = context.select((InputDataProvider p) => p.title);
+        onChanged = getOnChanged(context);
+        break;
 
-        case InpputField.password:
-          txtCntl.text = inputData.password;
-          // ignore: unused_label
-          onChanged = getOnChanged(context);
-          break;
-        default:
-          break;
-      }
-      txtCntl.selection =
-          TextSelection.fromPosition(TextPosition(offset: txtCntl.text.length));
-      return builtTextField(context, txtCntl, onChanged);
-    });
-  }
-}
-
-class LengthProvider extends StatelessWidget {
-  final int length;
-  const LengthProvider({super.key, required this.length});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(length.toString()),
-      ],
-    );
+      case InpputField.password:
+        txtCntl.text = context.select((InputDataProvider p) => p.password);
+        onChanged = getOnChanged(context);
+        break;
+      default:
+        break;
+    }
+    txtCntl.selection =
+        TextSelection.fromPosition(TextPosition(offset: txtCntl.text.length));
+    return builtTextField(context, txtCntl, onChanged);
   }
 }

@@ -1,12 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:password_manager/src/screens/add.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 import '../globals.dart';
-// BUGS
-///// when a type somethitg on any text input fields then checkbox state also renders
-///// te test add print call in checkbox widget and chekc for on chonge value in onchange function
+import '../screens/add.dart';
 
 class Sources extends ChangeNotifier {
   // Public field no need to  encapsulate
@@ -49,29 +46,6 @@ class Sources extends ChangeNotifier {
     }
     notifyListeners();
   }
-  //
-  // bool isChecked(field) {
-  //   if (kDebugMode) {
-  //     // print("IsChekched from add model Rendered again is this normal::::??");
-  //     print("ischecked recive: f$field");
-  //   }
-  //   if (field == "uppercase") {
-  //     return uppercase;
-  //   }
-  //   if (field == "lowercase") {
-  //     return lowercase;
-  //   }
-  //   if (field == "special") {
-  //     return special;
-  //   }
-  //   if (field == "number") {
-  //     return number;
-  //   }
-  //   if (field == "custom") {
-  //     return custom;
-  //   }
-  //   return false;
-  // }
 
   void addCustomChars(String keyname, String val) {
     setPrefs(key: keyname, value: val, isStr: true)
@@ -119,29 +93,18 @@ class Sources extends ChangeNotifier {
   Future<void> initPref() async {
     final prefs = await SharedPreferences.getInstance();
     try {
-      var ok =prefs.getKeys();
+      var ok = prefs.getKeys();
       print("ok#$ok");
-      // uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) as bool
-      //     ? true
-      //     : false;
-      // lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) as bool
-      //     ? true
-      //     : false;
-      // number = prefs!.getBool(describeEnum(CheckboxField.number)) as bool
-      //     ? true
-      //     : false;
-      // special = prefs.getBool(describeEnum(CheckboxField.special)) as bool
-      //     ? true
-      //     : false;
-      // custom = prefs.getBool(describeEnum(CheckboxField.custom)) as bool
-      //     ? true
-      //     : false;
-      // customChars =
-      //     prefs.getString(describeEnum(CheckboxField.customChars)) == null
-      //         ? "eouoeu"
-      //         : "ohohooho";
-      // notifyListeners();
+      uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) as bool;
+      lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) as bool;
+      number = prefs.getBool(describeEnum(CheckboxField.number)) as bool;
+      special = prefs.getBool(describeEnum(CheckboxField.special)) as bool;
+      custom = prefs.getBool(describeEnum(CheckboxField.custom)) as bool;
+      customChars =
+          prefs.getString(describeEnum(CheckboxField.customChars)) as String;
+      notifyListeners();
     } catch (e) {
+      writeToLogFile("erro  from initpref :$e");
       print("hi iam throwing error:value:$e");
     }
   }

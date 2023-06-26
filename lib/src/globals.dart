@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 const appName = "Passy";
 const appTitle = "Passy Password Manager";
@@ -76,4 +79,15 @@ class PasswordData {
         'passwordType': passwordType.toString(),
         'createdAt': createdAt.millisecondsSinceEpoch,
       };
+}
+
+Future<void> writeToLogFile(String message) async {
+  final directory = await getApplicationSupportDirectory();
+  final filePath = File("${directory.path}/log.txt");
+
+  try {
+    await filePath.writeAsString("$message\n ", mode: FileMode.append);
+  } catch (e) {
+    print("error writing to a log file $e");
+  }
 }

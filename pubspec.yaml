@@ -29,6 +29,7 @@ dependencies:
   sqflite: any
   sqflite_common_ffi: any
   path: any
+  path_provider: any
   async: any
 
   window_size:

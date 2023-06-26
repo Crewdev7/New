@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../globals.dart';
@@ -21,8 +22,12 @@ class DataListProvider extends ChangeNotifier {
 
   Future<int> add(PasswordData userData) async {
     return await DatabaseHelper.insertEntry("mylist", userData).then((id) {
+      writeToLogFile("adding entry to db with id:$id");
+
       notifyListeners();
       return id;
+    }).onError((error, stackTrace) {
+      writeToLogFile("we get error while adding entrie:$error");
     });
   }
 
@@ -32,6 +37,7 @@ class DataListProvider extends ChangeNotifier {
     _passwords.addAll(
         entries.map((json) => PasswordData1.fromJsonMap(json)).toList());
     var s = password.forEach((element) {
+      writeToLogFile("etries we getentries: $entries");
       print("${element.toJsonMap().toString()}");
     });
     return true;
@@ -63,9 +69,15 @@ class DatabaseHelper {
 
   static Future<Database> initDatabase() async {
     final databasesPath = await getDatabasesPath();
+    final secondPath = await getApplicationSupportDirectory();
+    final path2 = join(secondPath.path, "ok2.db");
     final path = join(databasesPath, "ok.db");
+    writeToLogFile("init database path: $path");
     print("daatbase path:$path");
+    print("daatbase path2:$path2");
 
+    writeToLogFile("end initDatabase");
+    print("daatbase path:$path");
     return _database = await openDatabase(
       path,
       version: 1,

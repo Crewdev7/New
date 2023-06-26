@@ -20,22 +20,20 @@ class DataListScreen extends StatelessWidget {
     // passwordLists = dataProvider.password;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Store lists")),
+      appBar: AppBar(title: Text("Store lists ${passwordLists.length}")),
       body: Column(
         children: [
-          Card(
-            elevation: 2,
-            child: Text(listLength.toString()),
-          ),
           Expanded(
             child: FutureBuilder<bool>(
                 future: dataProvider.getEntries(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData ||
-                      snapshot.data == null ||
-                      snapshot.data == false) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                  if (!snapshot.hasData || snapshot.data == false) {
+                    return Center(
+                      child: ListView(
+                        children: dataProvider.password
+                            .map((e) => _passwordtolist(context, e))
+                            .toList(),
+                      ),
                     );
                   }
 
@@ -125,49 +123,45 @@ class DataListScreen extends StatelessWidget {
           // For buttons to copy
           Row(
             children: [
-              Container(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: password.password))
-                        .then((value) => CherryToast.info(
-                                title: const Text("Password copied!"))
-                            .show(context));
-                    MotionToast.success(
-                      description: const Text("password copied"),
-                      height: 50,
-                      width: 300,
-                    ).show(context);
+              ElevatedButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: password.password))
+                      .then((value) => CherryToast.info(
+                              title: const Text("Password copied!"))
+                          .show(context));
+                  MotionToast.success(
+                    description: const Text("password copied"),
+                    height: 50,
+                    width: 300,
+                  ).show(context);
 
-                    CherryToast.success(
-                      title: const Text("Password copied"),
-                      toastPosition: Position.bottom,
-                    ).show(context);
-                  },
-                  child: const Text("Copy password"),
-                ),
+                  CherryToast.success(
+                    title: const Text("Password copied"),
+                    toastPosition: Position.bottom,
+                  ).show(context);
+                },
+                child: const Text("Copy password"),
               ),
               const SizedBox(
                 width: 20,
               ),
-              Container(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: password.username));
-                    Fluttertoast.showToast(msg: "username copied");
+              ElevatedButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: password.username));
+                  Fluttertoast.showToast(msg: "username copied");
 
-                    MotionToast.success(
-                      description: const Text("username copied"),
-                      height: 50,
-                      width: 300,
-                    ).show(context);
+                  MotionToast.success(
+                    description: const Text("username copied"),
+                    height: 50,
+                    width: 300,
+                  ).show(context);
 
-                    CherryToast.success(
-                      title: const Text("Username copied"),
-                      toastPosition: Position.bottom,
-                    ).show(context);
-                  },
-                  child: const Text("Copy username"),
-                ),
+                  CherryToast.success(
+                    title: const Text("Username copied"),
+                    toastPosition: Position.bottom,
+                  ).show(context);
+                },
+                child: const Text("Copy username"),
               ),
             ],
           ),
