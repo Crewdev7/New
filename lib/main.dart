@@ -14,7 +14,6 @@ import 'src/models/theme_provider.dart';
 import 'src/screens/init.dart';
 import 'src/screens/setting.dart';
 
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 const double windowWidth = 480;
 const double windowHeight = 854;
