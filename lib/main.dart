@@ -46,12 +46,12 @@ Future main() async {
   
   // init themes and pass  to provider for now
 
-  bool isDark;
-  isDark = await loadTheme2();
+  //bool isDark;
+  //isDark = await loadTheme2();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => AppProvider(isDark),
+        create: (context) => AppProvider(true),
       ),
       ChangeNotifierProvider(
         create: (context) => InputDataProvider(),
