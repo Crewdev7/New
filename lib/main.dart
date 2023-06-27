@@ -65,7 +65,7 @@ Future main() async {
     ],
     child: const PasswordManagerApp(),
   ));
-setupWindow();
+
 }
 
 class PasswordManagerApp extends StatefulWidget {
