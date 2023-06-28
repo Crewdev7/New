@@ -51,7 +51,6 @@ class Sources extends ChangeNotifier {
   }
 
   void toggleSource(String keyname, bool val) {
-    print("keyname in toggleSource:$keyname");
     bool isTrue;
     switch (keyname) {
       case "uppercase":
@@ -97,17 +96,16 @@ class Sources extends ChangeNotifier {
 
     notifyListeners();
   }
-
   Future<bool> initPref() async {
     final prefs = await SharedPreferences.getInstance();
     try {
       var ok = prefs.getKeys();
       print("initPref inside#$ok");
-      uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) as bool;
-      lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) as bool;
-      number = prefs.getBool(describeEnum(CheckboxField.number)) as bool;
-      special = prefs.getBool(describeEnum(CheckboxField.special)) as bool;
-      custom = prefs.getBool(describeEnum(CheckboxField.custom)) as bool;
+      uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) ?? true;
+      lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) ?? true;
+      number = prefs.getBool(describeEnum(CheckboxField.number)) ?? true;
+      special = prefs.getBool(describeEnum(CheckboxField.special)) ?? true;
+      custom = prefs.getBool(describeEnum(CheckboxField.custom)) ?? false;
       _passwordLimit =
           prefs.getInt(describeEnum(CheckboxField.passwordLimit)) ?? 8;
       customChars =
@@ -116,7 +114,7 @@ class Sources extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print("error initPref value: $e");
+      print("error initPref value :  $e");
       writeToLogFile("error initPref :$e");
       return false;
     }
