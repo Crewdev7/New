@@ -44,15 +44,22 @@ Future<bool> loadTheme2() async {
   return pref.getBool("darkTheme") ?? false;
 }
 
-Future main() async {
+Future<void> main() async {
   // init themes and pass  to provider for now
+  print("main is loaded");
+  writeToLogFile("main is loaded");
   WidgetsFlutterBinding.ensureInitialized();
   final themeProvider = AppProvider();
   var isDark = await themeProvider.loadTheme;
-  print("main is loaded");
-  ;
-  writeToLogFile("main is loaded");
-  setupWindow();
+  print("dark theem provider is loaded");
+  writeToLogFile("dark theem provider is loaded");
+
+  // setupWindow();
+
+  final sourceProvider = Sources();
+  final ok = await sourceProvider.initPref();
+  print("thiis is in main  for sourcesprovider initpref call");
+  writeToLogFile("thiis is in main  for sourcesprovider initpref call");
   runApp(MultiProvider(
     providers: [
       // ChangeNotifierProvider(
@@ -67,8 +74,8 @@ Future main() async {
       ChangeNotifierProvider(
         create: (context) => DataListProvider(),
       ),
-      ChangeNotifierProvider(
-        create: (context) => Sources(),
+      ChangeNotifierProvider.value(
+        value: sourceProvider,
       ),
     ],
     child: const PasswordManagerApp(),

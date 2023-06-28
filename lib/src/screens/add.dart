@@ -10,22 +10,8 @@ import '../utils/mix.dart';
 class AddScreen extends StatelessWidget {
   const AddScreen({super.key});
 
-  void fetchData(context) {
-    final dataProvider = Provider.of<Sources>(context, listen: false);
-    dataProvider.initPref().then((success) {
-      if (success) {
-        print("init pref is success");
-        writeToLogFile("init data fatched success");
-      }
-    }).onError((error, stackTrace) {
-      print("you have eerror while intialization of Sources");
-      writeToLogFile("you have eerror while intialization of Sources");
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    fetchData(context);
     return MyScaffold(
       appBarTitle: "Dashboard",
       body: SingleChildScrollView(
