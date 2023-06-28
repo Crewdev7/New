@@ -96,17 +96,15 @@ class _PasswordManagerAppState extends State<PasswordManagerApp> {
     print("PasswordManagerApp is loadod");
     writeToLogFile("PasswordManagerApp is loadod");
 
-    return FocusScope(
-      child: MaterialApp(
-        // theme Provider
-        theme: Styles.themeData(themeData.isDark, context),
-        title: appTitle,
-        initialRoute: '/',
-        routes: {
-          "/": (context) => const InitScreen(),
-          "settings": (context) => const SettingScreen(),
-        },
-      ),
+    return MaterialApp(
+      // theme Provider
+      theme: Styles.themeData(themeData.isDark, context),
+      title: appTitle,
+      initialRoute: '/',
+      routes: {
+        InitScreen.routeName: (context) => const InitScreen(),
+        "settings": (context) => const SettingScreen(),
+      },
     );
   }
 }
