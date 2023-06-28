@@ -51,6 +51,7 @@ class Sources extends ChangeNotifier {
   }
 
   void toggleSource(String keyname, bool val) {
+    print("keyname in toggleSource:$keyname");
     bool isTrue;
     switch (keyname) {
       case "uppercase":
@@ -115,6 +116,7 @@ class Sources extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
+      print("error initPref value: $e");
       writeToLogFile("error initPref :$e");
       return false;
     }
