@@ -28,101 +28,105 @@ class AddScreen extends StatelessWidget {
     fetchData(context);
     return MyScaffold(
       appBarTitle: "Dashboard",
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Dropdown menu for type selection
-            const TypeDropdown(label: "Type"),
-            const SizedBox(height: 20),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Dropdown menu for type selection
+              const TypeDropdown(label: "Type"),
+              const SizedBox(height: 20),
 
-            ...[
-              const CusInputTextFieldd(Key("title"), fields: InpputField.title),
+              ...[
+                const CusInputTextFieldd(Key("title"),
+                    fields: InpputField.title),
 
-              const CusInputTextFieldd(Key("username"),
-                  fields: InpputField.username),
+                const CusInputTextFieldd(Key("username"),
+                    fields: InpputField.username),
 
-              const CusInputTextFieldd(Key("password"),
-                  fields: InpputField.password),
+                const CusInputTextFieldd(Key("password"),
+                    fields: InpputField.password),
 
-              Center(
-                  child: Row(
-                children: [
-                  Expanded(
-                    child: Slider(
-                        min: 1,
-                        max: 100,
-                        value: context.select(
-                            (Sources p) => p.getPasswordLimit.toDouble()),
-                        onChanged: (v) {
-                          context.read<Sources>().setPasswordLimit = v.toInt();
-                        }),
-                  ),
-                  Text(context.read<Sources>().getPasswordLimit.toString()),
-                ],
-              )),
-              //Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      context
-                          .read<DataListProvider>()
-                          .add(context.read<InputDataProvider>().getInputData);
-                    },
-                    child: const Text("Add"),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Transform.scale(
-                    scale: 1.4,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          var source = context.read<Sources>();
-                          source.getSource();
-                          context.read<InputDataProvider>().generatePassword(
-                              source.source, source.getPasswordLimit);
-                        },
-                        child: const Text("Passy")),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  ElevatedButton(onPressed: () {}, child: const Text("Reset")),
-                ],
-              ),
-              const Center(
-                  child: Text("Include:", style: TextStyle(fontSize: 20))),
+                Center(
+                    child: Row(
+                  children: [
+                    Expanded(
+                      child: Slider(
+                          min: 1,
+                          max: 100,
+                          value: context.select(
+                              (Sources p) => p.getPasswordLimit.toDouble()),
+                          onChanged: (v) {
+                            context.read<Sources>().setPasswordLimit =
+                                v.toInt();
+                          }),
+                    ),
+                    Text(context.read<Sources>().getPasswordLimit.toString()),
+                  ],
+                )),
+                //Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<DataListProvider>().add(
+                            context.read<InputDataProvider>().getInputData);
+                      },
+                      child: const Text("Add"),
+                    ),
+                    const SizedBox(
+                      width: 30,
+                    ),
+                    Transform.scale(
+                      scale: 1.4,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            var source = context.read<Sources>();
+                            source.getSource();
+                            context.read<InputDataProvider>().generatePassword(
+                                source.source, source.getPasswordLimit);
+                          },
+                          child: const Text("Passy")),
+                    ),
+                    const SizedBox(
+                      width: 30,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {}, child: const Text("Reset")),
+                  ],
+                ),
+                const Center(
+                    child: Text("Include:", style: TextStyle(fontSize: 20))),
 // Move state up maybe
-              const Column(
-                children: [
-                  CustomCheckboxTile(),
-                  Divider(),
-                  Row(
-                    children: [
-                      Text("Include custom charaters:",
-                          style: TextStyle(fontSize: 20)),
-                    ],
-                  ),
-                  TextField(
-                    maxLines: 5,
-                    minLines: 1,
-                    decoration: InputDecoration(
-                        label: Text("Custom charaters/letters")),
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ),
-            ].expand((element) => [
-                  element,
-                  const SizedBox(
-                    height: 20,
-                  )
-                ]),
-          ],
+                const Column(
+                  children: [
+                    CustomCheckboxTile(),
+                    Divider(),
+                    Row(
+                      children: [
+                        Text("Include custom charaters:",
+                            style: TextStyle(fontSize: 20)),
+                      ],
+                    ),
+                    TextField(
+                      maxLines: 5,
+                      minLines: 1,
+                      decoration: InputDecoration(
+                          label: Text("Custom charaters/letters")),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ].expand((element) => [
+                    element,
+                    const SizedBox(
+                      height: 20,
+                    )
+                  ]),
+            ],
+          ),
         ),
       ),
     );

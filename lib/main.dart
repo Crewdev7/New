@@ -32,7 +32,9 @@ void setupWindow() {
       ));
     });
     sqfliteFfiInit();
+
     databaseFactory = databaseFactoryFfi;
+    writeToLogFile("Linux is runnnig");
   }
 }
 
@@ -43,15 +45,21 @@ Future<bool> loadTheme2() async {
 }
 
 Future main() async {
-  
   // init themes and pass  to provider for now
-
-  //bool isDark;
-  //isDark = await loadTheme2();
+  WidgetsFlutterBinding.ensureInitialized();
+  final themeProvider = AppProvider();
+  var isDark = await themeProvider.loadTheme;
+  print("main is loaded");
+  ;
+  writeToLogFile("main is loaded");
+  setupWindow();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(
-        create: (context) => AppProvider(true),
+      // ChangeNotifierProvider(
+      //   create: (context) => AppProvider(),
+      // ),
+      ChangeNotifierProvider.value(
+        value: themeProvider,
       ),
       ChangeNotifierProvider(
         create: (context) => InputDataProvider(),
@@ -65,7 +73,6 @@ Future main() async {
     ],
     child: const PasswordManagerApp(),
   ));
-
 }
 
 class PasswordManagerApp extends StatefulWidget {
@@ -79,6 +86,8 @@ class _PasswordManagerAppState extends State<PasswordManagerApp> {
   @override
   Widget build(BuildContext context) {
     var themeData = Provider.of<AppProvider>(context, listen: true);
+    print("PasswordManagerApp is loadod");
+    writeToLogFile("PasswordManagerApp is loadod");
 
     return FocusScope(
       child: MaterialApp(
