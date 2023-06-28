@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:password_manager/src/globals.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppProvider extends ChangeNotifier {
@@ -8,7 +9,6 @@ class AppProvider extends ChangeNotifier {
   void toggle() async {
     _isDarkMode = !_isDarkMode;
     notifyListeners();
-    print("Theme is toggled");
     final pref = await SharedPreferences.getInstance();
     await pref.setBool("darkTheme", isDark);
   }
@@ -17,14 +17,13 @@ class AppProvider extends ChangeNotifier {
     try {
       print("Load theme is called");
       final pref = await SharedPreferences.getInstance();
-      var isDark = pref.getBool("darkTheme");
-      _isDarkMode = isDark!;
+      _isDarkMode = pref.getBool("darkTheme") ?? false;
 
-      print("Load theme is called");
       notifyListeners();
       return true;
     } catch (e) {
       print("loadTheme errored:$e");
+      writeToLogFile("loadTheme errored:$e");
       return true;
     }
   }

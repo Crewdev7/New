@@ -3,8 +3,8 @@ import 'package:password_manager/src/models/app_model_provider.dart';
 import 'package:provider/provider.dart';
 
 class MyScaffold extends StatelessWidget {
-  final appBarActions;
-  final onDarkModeToggle;
+  List<Widget>? appBarActions;
+  Widget? onDarkModeToggle;
   String? appBarTitle;
   final Widget body;
   final Widget? floatingActionButton;
@@ -32,7 +32,7 @@ class MyScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: appBarTitle != null ? Text(appBarTitle!) : null,
-        actions: mergedActions.isNotEmpty ? mergedActions : null,
+        actions: appBarActions ?? mergedActions,
       ),
       body: body,
       floatingActionButton: floatingActionButton,

@@ -11,12 +11,33 @@ class Sources extends ChangeNotifier {
   bool lowercase = true;
   bool number = true;
   bool special = true;
-  bool custom = true;
+  bool _custom = true;
+
+  bool get custom {
+    return _custom;
+  }
+
+  set custom(bool value) {
+    _custom = value;
+    notifyListeners();
+  }
 
   final letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   final numbers = 1234567890;
   final specialChars = "~`!@#\$%^&*(){}/?+=-_|\\::\"";
-  String customChars = "23t";
+  String _customChars = "";
+
+  String get customChars {
+    return _customChars;
+  }
+
+  set customChars(String value) {
+    _customChars = value;
+    print("cusom cars is setting");
+    addCustomChars(describeEnum(CheckboxField.customChars), value);
+
+    notifyListeners();
+  }
 
   int _passwordLimit = 8;
   int get getPasswordLimit => _passwordLimit;
@@ -44,7 +65,7 @@ class Sources extends ChangeNotifier {
   }
 
   void addCustomChars(String keyname, String val) {
-    setPrefs(key: keyname, value: val, isStr: true)
+    setPrefs(key: keyname, value: val.replaceAll(" ", ""), isStr: true)
         .then((value) =>
             print("Prefs.  set succefuly for custom chars#$customChars"))
         .catchError((e) => print("Unable  to set pref for custom char.$e"));
@@ -72,6 +93,7 @@ class Sources extends ChangeNotifier {
         isTrue = false;
         break;
     }
+    print("custom field after toogle:$custom");
 
     notifyListeners();
 
@@ -137,6 +159,7 @@ class Sources extends ChangeNotifier {
       }
       if (isStr) {
         await prefs.setString(key, value);
+        print("sseting value :$value");
       }
     } catch (e) {
       print("setPrefs inside error : $e");

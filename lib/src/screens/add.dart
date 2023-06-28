@@ -205,14 +205,20 @@ class CustomCheckboxTile extends StatelessWidget {
               final field = checkbox['field'] as CheckboxField;
 
               final text = checkbox['text'] as String;
-              final subtitle = checkbox['subtitle'] as String;
+              String subtitle = checkbox['subtitle'] as String;
+
+              if (field == CheckboxField.custom) {
+                final chars = context.read<Sources>().customChars;
+                if (chars.isNotEmpty) {
+                  subtitle = chars;
+                }
+              }
+
               bool isCheckede = false;
 
               isCheckede = isChecked(context, field);
               final keyname = describeEnum(field);
-              print("keyname in listview:$keyname");
 
-              print("inside listvied field:$field");
               return CheckboxListTile(
                 onChanged: (val) =>
                     context.read<Sources>().toggleSource(keyname, val!),
@@ -287,6 +293,8 @@ class CusInputTextFieldd extends StatelessWidget {
         return const Icon(Icons.password);
       case InpputField.title:
         return const Icon(Icons.title);
+      case InpputField.username:
+        return const Icon(Icons.person_2);
 
       default:
         return const Icon(Icons.question_mark);

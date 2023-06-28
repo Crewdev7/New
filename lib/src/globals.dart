@@ -20,7 +20,6 @@ getIconForType(PasswordType type) {
       return const Icon(Icons.iso);
     case PasswordType.android:
       return const Icon(Icons.android);
-
     case PasswordType.username:
       return const Icon(Icons.verified_user);
     case PasswordType.website:
@@ -86,6 +85,6 @@ Future<void> writeToLogFile(String message) async {
   try {
     await filePath.writeAsString("$message\n ", mode: FileMode.append);
   } catch (e) {
-    print("error writing to a log file $e");
+    // print("error writing to a log file $e");
   }
 }

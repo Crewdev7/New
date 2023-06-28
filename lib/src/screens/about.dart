@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:share_plus/share_plus.dart';
+
 import 'package:password_manager/src/globals.dart';
 import 'package:password_manager/src/utils/mix.dart';
 
@@ -88,7 +92,14 @@ class AboutScreen extends StatelessWidget {
                     title: const Text("Webiste"),
                     subtitle: const Text("http://www.example.com"),
                     trailing: const Icon(Icons.open_in_browser),
-                    onTap: () {},
+                    onTap: () async {
+                      final result = await Share.shareWithResult(
+                          "Check out my website for other opensource projects");
+
+                      if (result.status == ShareResultStatus.success) {
+                        Fluttertoast.showToast(msg: 'Thanks for  checking out');
+                      }
+                    },
                   ),
                 ],
               ),

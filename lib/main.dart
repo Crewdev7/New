@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:password_manager/src/globals.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_size/window_size.dart';
 
@@ -32,34 +31,24 @@ void setupWindow() {
       ));
     });
     sqfliteFfiInit();
-
     databaseFactory = databaseFactoryFfi;
-    writeToLogFile("Linux is runnnig");
   }
 }
 
-Future<bool> loadTheme2() async {
-  final pref = await SharedPreferences.getInstance();
-  // reads from system if not set
-  return pref.getBool("darkTheme") ?? false;
-}
-
-final themeProvider = AppProvider();
-  final sourceProvider = Sources();
 Future<void> main() async {
+  // MultiPlatform checker
+  setupWindow();
   // init themes and pass  to provider for now
-  print("main is loaded");
-  writeToLogFile("main is loaded");
+  // State object creation
+  final themeProvider = AppProvider();
+  final sourceProvider = Sources();
+
   WidgetsFlutterBinding.ensureInitialized();
+
+// States inits
   await themeProvider.loadTheme;
-  print("dark theem provider is loaded");
-  writeToLogFile("dark theem provider is loaded");
+  await sourceProvider.initPref();
 
-  // setupWindow();
-
-  final ok = await sourceProvider.initPref();
-  print("thiis is in main  for sourcesprovider initpref call");
-  writeToLogFile("thiis is in main  for sourcesprovider initpref call");
   runApp(MultiProvider(
     providers: [
       // ChangeNotifierProvider(
@@ -93,8 +82,6 @@ class _PasswordManagerAppState extends State<PasswordManagerApp> {
   @override
   Widget build(BuildContext context) {
     var themeData = Provider.of<AppProvider>(context, listen: true);
-    print("PasswordManagerApp is loadod");
-    writeToLogFile("PasswordManagerApp is loadod");
 
     return MaterialApp(
       // theme Provider
