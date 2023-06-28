@@ -13,13 +13,19 @@ class AppProvider extends ChangeNotifier {
     await pref.setBool("darkTheme", isDark);
   }
 
-  Future<void> get loadTheme async {
-    print("Load theme is called");
-    final pref = await SharedPreferences.getInstance();
-    var isDark = pref.getBool("darkTheme");
-    _isDarkMode = isDark!;
+  Future<bool> get loadTheme async {
+    try {
+      print("Load theme is called");
+      final pref = await SharedPreferences.getInstance();
+      var isDark = pref.getBool("darkTheme");
+      _isDarkMode = isDark!;
 
-    print("Load theme is called");
-    notifyListeners();
+      print("Load theme is called");
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print("loadTheme errored:$e");
+      return true;
+    }
   }
 }

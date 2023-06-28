@@ -96,6 +96,7 @@ class Sources extends ChangeNotifier {
 
     notifyListeners();
   }
+
   Future<bool> initPref() async {
     final prefs = await SharedPreferences.getInstance();
     try {
