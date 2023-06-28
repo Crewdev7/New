@@ -28,6 +28,7 @@ class CustomCharsDialog extends StatelessWidget {
         TextButton(
             onPressed: () {
               source.customChars = customCharController.text;
+              source.custom = true;
               Navigator.pop(context);
             },
             child: const Text("Ok")),
