@@ -44,20 +44,20 @@ Future<bool> loadTheme2() async {
   return pref.getBool("darkTheme") ?? false;
 }
 
+final themeProvider = AppProvider();
+  final sourceProvider = Sources();
 Future<void> main() async {
   // init themes and pass  to provider for now
   print("main is loaded");
   writeToLogFile("main is loaded");
   WidgetsFlutterBinding.ensureInitialized();
-  final themeProvider = AppProvider();
   await themeProvider.loadTheme;
   print("dark theem provider is loaded");
   writeToLogFile("dark theem provider is loaded");
 
   // setupWindow();
 
-  final sourceProvider = Sources();
-  await sourceProvider.initPref();
+  final ok = await sourceProvider.initPref();
   print("thiis is in main  for sourcesprovider initpref call");
   writeToLogFile("thiis is in main  for sourcesprovider initpref call");
   runApp(MultiProvider(
