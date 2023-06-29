@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../globals.dart';
@@ -8,7 +7,7 @@ import '../globals.dart';
 class DataListProvider extends ChangeNotifier {
   List<PasswordData1> _passwords = [];
 
-  final _databaseHelper = DatabaseHelper();
+  // final _databaseHelper = DatabaseHelper();
   final tableName = DatabaseHelper.tableName;
   List<PasswordData1> get password {
     return _passwords;
@@ -36,17 +35,13 @@ class DataListProvider extends ChangeNotifier {
     _passwords.clear();
     _passwords.addAll(
         entries.map((json) => PasswordData1.fromJsonMap(json)).toList());
-    var s = password.forEach((element) {
-      writeToLogFile("etries we getentries: $entries");
-      print("${element.toJsonMap().toString()}");
-    });
     return true;
   }
 
-  Future<PasswordData1?> getEtry(int id) async {
-    final entry = await _databaseHelper.getEntry(id);
-    return entry!;
-  }
+  // Future<PasswordData1?> getEtry(int id) async {
+  //   final entry = await _databaseHelper.getEntry(id);
+  //   return entry!;
+  // }
 }
 
 class DatabaseHelper {
@@ -105,21 +100,18 @@ class DatabaseHelper {
     return await db.delete(tableName, where: "id = ?", whereArgs: [id]);
   }
 
-  Future<PasswordData1?> getEntry(int id) async {
-    final db = await DatabaseHelper.initDatabase();
-    final result =
-        await db.query(tableName, where: "id = ?", whereArgs: [id], limit: 1);
-    print("we get result: $result");
-
-    if (result.isNotEmpty) {
-      final result2 = PasswordData1.fromJsonMap(result.first);
-      print("web get result2=$result2");
-      // return result.map((json) PasswordData1
-      // .fromJsonMap(json));
-    } else {
-      return null;
-    }
-  }
+//   Future<PasswordData1?> getEntry(int id) async {
+//     final db = await DatabaseHelper.initDatabase();
+//     final result =
+//         await db.query(tableName, where: "id = ?", whereArgs: [id], limit: 1);
+//
+//     if (result.isNotEmpty) {
+//       final result2 = PasswordData1.fromJsonMap(result.first);
+//       return result2;
+//     } else {
+//       return null;
+//     }
+//   }
 }
 
 class PasswordData1 {

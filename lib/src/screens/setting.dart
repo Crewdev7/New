@@ -8,14 +8,14 @@ import 'package:password_manager/src/utils/mix.dart';
 import 'package:provider/provider.dart';
 
 class CustomCharsDialog extends StatelessWidget {
-  const CustomCharsDialog({super.key});
+  final bool? toggle;
+  const CustomCharsDialog({super.key, this.toggle});
 
   @override
   Widget build(BuildContext context) {
     final customCharController = TextEditingController();
-    var source = context.read<Sources>();
-
-    customCharController.text = source.customChars;
+    var customChars = context.read<Sources>();
+    customCharController.text = customChars.customChars;
     return AlertDialog(
       content: TextField(
         maxLines: 5,
@@ -27,8 +27,13 @@ class CustomCharsDialog extends StatelessWidget {
       actions: [
         TextButton(
             onPressed: () {
-              source.customChars = customCharController.text;
-              source.custom = true;
+              final text = customCharController.text.replaceAll(" ", "");
+              if (text.isNotEmpty) {
+                customChars.customChars = text;
+                if (toggle != null) {
+                  customChars.custom = true;
+                }
+              }
               Navigator.pop(context);
             },
             child: const Text("Ok")),
@@ -42,6 +47,21 @@ class CustomCharsDialog extends StatelessWidget {
   }
 }
 
+void charsOnChange(BuildContext context, v) {
+  //only toggle if charaters not empty
+  // show showDialog if empty
+  // toggle if charaters are present
+  if (!context.read<Sources>().custom &&
+      context.read<Sources>().customChars.isEmpty) {
+    showDialog(
+      context: context,
+      builder: (context) => const CustomCharsDialog(),
+    );
+    return;
+  }
+  context.read<Sources>().toggleSource(describeEnum(CheckboxField.custom), v);
+}
+
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
 
@@ -49,80 +69,75 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // using watch works in such a way that we dont have to  wrap all of these in any consumber
     // if you change value from any where its value will we reflected here too
-    var isDark = context.watch<AppProvider>();
     final sourceRead = context.read<Sources>();
-    final sourceWatch = context.watch<Sources>();
 
     return MyScaffold(
       appBarTitle: "Settings",
       body: Builder(builder: (context) {
+        var charsToggle = SwitchListTile(
+            // value: context.select((Sources p) => p.custom),
+            value: context.watch<Sources>().custom,
+            title: const Text("Enable Custom letters"),
+            onChanged: (v) => charsOnChange(context, v));
+
+        var customCharsList = Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(context.watch<Sources>().customChars),
+              ButtonBar(
+                children: [
+                  context.watch<Sources>().customChars.isNotEmpty
+                      ? Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                sourceRead.customChars = "";
+                                sourceRead.custom = false;
+                              },
+                              icon: const Icon(Icons.delete),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => CustomCharsDialog(),
+                                );
+                              },
+                              icon: const Icon(Icons.edit),
+                            )
+                          ],
+                        )
+                      : const SizedBox(),
+                ],
+              )
+            ],
+          ),
+        );
+        final darkThemeSwitch = SwitchListTile(
+            value: context.watch<AppProvider>().isDark,
+            title: const Text("Enable Darkmode"),
+            onChanged: (v) {
+              context.read<AppProvider>().toggle();
+            });
+
         return Padding(
           padding: const EdgeInsets.all(20.0),
           child: ListView(
             children: [
-              SwitchListTile(
-                  value: isDark.isDark,
-                  title: const Text("Enable Darkmode"),
-                  onChanged: (v) {
-                    isDark.toggle();
-                  }),
-              SwitchListTile(
-                  value: context.select((Sources p) => p.custom),
-                  title: const Text("Enable Custom letters"),
-                  onChanged: (v) {
-                    if (!sourceWatch.custom &&
-                        sourceWatch.customChars.isEmpty) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const CustomCharsDialog(),
-                      );
-                      return;
-                    }
-                    sourceRead.toggleSource(
-                        describeEnum(CheckboxField.custom), v);
-                  }),
-              sourceWatch.customChars.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(sourceRead.customChars),
-                          ButtonBar(
-                            children: [
-                              sourceWatch.custom
-                                  ? Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            sourceRead.customChars = "";
-                                          },
-                                          icon: const Icon(Icons.delete),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  const CustomCharsDialog(),
-                                            );
-                                          },
-                                          icon: const Icon(Icons.edit),
-                                        )
-                                      ],
-                                    )
-                                  : Divider(),
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                  : sourceWatch.custom
-                      ? IconButton(onPressed: () {}, icon: Icon(Icons.add))
-                      : SizedBox(),
+              // Theme switch
+              darkThemeSwitch,
+
+              // Custom charaters toggler
+              charsToggle,
+
+              // Cusotm charaters
+              customCharsList,
               const ListTile(
                 title: Text("Backup and restore"),
               ),
+              //About page
               ListTile(
                 title: const Text("About"),
                 onTap: () {

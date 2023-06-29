@@ -33,9 +33,7 @@ class Sources extends ChangeNotifier {
 
   set customChars(String value) {
     _customChars = value;
-    print("cusom cars is setting");
-    addCustomChars(describeEnum(CheckboxField.customChars), value);
-
+    addCustomChars();
     notifyListeners();
   }
 
@@ -64,41 +62,46 @@ class Sources extends ChangeNotifier {
     // notifyListeners();
   }
 
-  void addCustomChars(String keyname, String val) {
-    setPrefs(key: keyname, value: val.replaceAll(" ", ""), isStr: true)
+  void addCustomChars() {
+    setPrefs(
+            key: describeEnum(CheckboxField.customChars),
+            value: customChars,
+            isStr: true)
         .then((value) =>
+            // ignore: avoid_print
             print("Prefs.  set succefuly for custom chars#$customChars"))
+        // ignore: avoid_print
         .catchError((e) => print("Unable  to set pref for custom char.$e"));
   }
 
   void toggleSource(String keyname, bool val) {
-    bool isTrue;
     switch (keyname) {
       case "uppercase":
-        isTrue = uppercase = val;
+        uppercase = val;
         break;
       case "lowercase":
-        isTrue = lowercase = val;
+        lowercase = val;
         break;
       case "number":
-        isTrue = number = val;
+        number = val;
         break;
       case "special":
-        isTrue = special = val;
+        special = val;
         break;
       case "custom":
-        isTrue = custom = val;
+        custom = val;
         break;
       default:
-        isTrue = false;
+        false;
         break;
     }
-    print("custom field after toogle:$custom");
 
     notifyListeners();
 
     setPrefs(key: keyname, value: val, isBool: true)
+        // ignore: avoid_print
         .then((value) => print("Prefs.  set succefuly for bool"))
+        // ignore: avoid_print
         .catchError((e) => print("Unable  to set Prefs.$e"));
   }
 
@@ -109,10 +112,8 @@ class Sources extends ChangeNotifier {
             value: value,
             isInt: true)
         .then((success) {
-      print("password limit set success with value $value");
       writeToLogFile("password limit set success with value $value");
     }).onError((error, stackTrace) {
-      print("Error while setting password limit");
       writeToLogFile("Error while setting password limit");
     });
 
@@ -122,8 +123,6 @@ class Sources extends ChangeNotifier {
   Future<bool> initPref() async {
     final prefs = await SharedPreferences.getInstance();
     try {
-      var ok = prefs.getKeys();
-      print("initPref inside#$ok");
       uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) ?? true;
       lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) ?? true;
       number = prefs.getBool(describeEnum(CheckboxField.number)) ?? true;
@@ -137,7 +136,6 @@ class Sources extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print("error initPref value :  $e");
       writeToLogFile("error initPref :$e");
       return false;
     }
@@ -159,10 +157,8 @@ class Sources extends ChangeNotifier {
       }
       if (isStr) {
         await prefs.setString(key, value);
-        print("sseting value :$value");
       }
     } catch (e) {
-      print("setPrefs inside error : $e");
       writeToLogFile("error setPrefs: $e");
     }
   }

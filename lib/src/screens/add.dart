@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:password_manager/src/models/add_model_provider.dart';
 import 'package:password_manager/src/models/list_model_provider.dart';
+import 'package:password_manager/src/screens/setting.dart';
 import 'package:provider/provider.dart';
 
 import '../globals.dart';
@@ -203,25 +204,31 @@ class CustomCheckboxTile extends StatelessWidget {
             child: Builder(builder: (context) {
               final checkbox = checkboxesData[index];
               final field = checkbox['field'] as CheckboxField;
-
-              final text = checkbox['text'] as String;
+              final keyname = describeEnum(field);
               String subtitle = checkbox['subtitle'] as String;
+              bool isCheckede = false;
+              final text = checkbox['text'] as String;
 
+              Function(bool?)? onChanged =
+                  (val) => context.read<Sources>().toggleSource(keyname, val!);
               if (field == CheckboxField.custom) {
                 final chars = context.read<Sources>().customChars;
                 if (chars.isNotEmpty) {
                   subtitle = chars;
+                } else {
+                  onChanged = (v) {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CustomCharsDialog(toggle: true);
+                        });
+                  };
                 }
               }
 
-              bool isCheckede = false;
-
               isCheckede = isChecked(context, field);
-              final keyname = describeEnum(field);
-
               return CheckboxListTile(
-                onChanged: (val) =>
-                    context.read<Sources>().toggleSource(keyname, val!),
+                onChanged: onChanged,
                 value: isCheckede,
                 title: Text(text),
                 subtitle: Text(subtitle),
