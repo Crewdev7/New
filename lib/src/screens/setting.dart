@@ -3,50 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:password_manager/src/models/add_model_provider.dart';
 import 'package:password_manager/src/models/app_model_provider.dart';
 import 'package:password_manager/src/screens/about.dart';
-import 'package:password_manager/src/screens/add.dart';
 import 'package:password_manager/src/utils/mix.dart';
 import 'package:provider/provider.dart';
 
-class CustomCharsDialog extends StatelessWidget {
-  final bool? toggle;
-  const CustomCharsDialog({super.key, this.toggle});
+import '../globals.dart';
+import '../widgets/c_chars_dialog.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    final customCharController = TextEditingController();
-    var customChars = context.read<Sources>();
-    customCharController.text = customChars.customChars;
-    return AlertDialog(
-      content: TextField(
-        maxLines: 5,
-        minLines: 1,
-        controller: customCharController,
-        decoration:
-            const InputDecoration(label: Text("Custom charaters/letters")),
-      ),
-      actions: [
-        TextButton(
-            onPressed: () {
-              final text = customCharController.text.replaceAll(" ", "");
-              if (text.isNotEmpty) {
-                customChars.customChars = text;
-                if (toggle != null) {
-                  customChars.custom = true;
-                }
-              }
-              Navigator.pop(context);
-            },
-            child: const Text("Ok")),
-        TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text("Cancel")),
-      ],
-    );
-  }
-}
-
+// TODO can be extracted into its own widgets
+// to keep changes easy in future
+// each widgets not depends on parents
+// get state from provider instead
 void charsOnChange(BuildContext context, v) {
   //only toggle if charaters not empty
   // show showDialog if empty
@@ -59,10 +25,11 @@ void charsOnChange(BuildContext context, v) {
     );
     return;
   }
-  context.read<Sources>().toggleSource(describeEnum(CheckboxField.custom), v);
+  context.read<Sources>().toggleSource(describeEnum(SourceFieldType.custom), v);
 }
 
 class SettingScreen extends StatelessWidget {
+  static String routeName = "/Settings";
   const SettingScreen({super.key});
 
   @override
@@ -102,7 +69,8 @@ class SettingScreen extends StatelessWidget {
                               onPressed: () {
                                 showDialog(
                                   context: context,
-                                  builder: (context) => CustomCharsDialog(),
+                                  builder: (context) =>
+                                      const CustomCharsDialog(),
                                 );
                               },
                               icon: const Icon(Icons.edit),

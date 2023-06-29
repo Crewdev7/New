@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -12,9 +11,6 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
-      // appBar: AppBar(
-      //   title: const Text("About"),
-      // ),
       appBarTitle: "About",
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -76,9 +72,7 @@ class AboutScreen extends StatelessWidget {
                     title: const Text("Check for update"),
                     subtitle: const Text("A new version is available"),
                     trailing: const Icon(Icons.front_loader),
-                    onTap: () {
-                      print("checking for update");
-                    },
+                    onTap: () {},
                   ),
                 ],
               ),

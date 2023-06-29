@@ -1,17 +1,27 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../models/add_model_provider.dart';
 
-class CusInputTextFieldd extends StatelessWidget {
-  final InpputField fields;
+enum InputFieldType {
+  username,
+  password,
+  title,
+}
 
-  const CusInputTextFieldd(Key? key, {required this.fields}) : super(key: key);
+class CustomTextInputField extends StatelessWidget {
+  final InputFieldType inputType;
+
+  const CustomTextInputField(Key? key, {required this.inputType})
+      : super(key: key);
 
   String getLabel() {
-    switch (fields) {
-      case InpputField.username:
+    switch (inputType) {
+      case InputFieldType.username:
         return 'Username';
-      case InpputField.password:
+      case InputFieldType.password:
         return "Password";
-      case InpputField.title:
+      case InputFieldType.title:
         return "Title";
       default:
         return "Unkown";
@@ -19,32 +29,31 @@ class CusInputTextFieldd extends StatelessWidget {
   }
 
   Icon? getLeadingIcon() {
-    switch (fields) {
-      case InpputField.password:
+    switch (inputType) {
+      case InputFieldType.password:
         return const Icon(Icons.password);
-      case InpputField.title:
+      case InputFieldType.title:
         return const Icon(Icons.title);
-
+      case InputFieldType.username:
+        return const Icon(Icons.person_2);
       default:
         return const Icon(Icons.question_mark);
     }
   }
 
-  void Function(String) getOnChanged(
-    BuildContext context,
-  ) {
+  void Function(String) getOnChanged(BuildContext context) {
     final inpuData = context.read<InputDataProvider>();
 
-    switch (fields) {
-      case InpputField.username:
+    switch (inputType) {
+      case InputFieldType.username:
         return (v) {
           inpuData.username = v;
         };
-      case InpputField.title:
+      case InputFieldType.title:
         return (v) {
           inpuData.title = v;
         };
-      case InpputField.password:
+      case InputFieldType.password:
         return (v) {
           inpuData.password = v;
         };
@@ -55,13 +64,20 @@ class CusInputTextFieldd extends StatelessWidget {
 
   Widget builtTextField(BuildContext context, TextEditingController text,
       void Function(String) onChanged) {
-    return TextField(
-      controller: text,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: getLabel(),
-        prefixIcon: getLeadingIcon(),
-      ),
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: text,
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              labelText: getLabel(),
+              prefixIcon: getLeadingIcon(),
+            ),
+          ),
+        ),
+        Text(text.text.length.toString()),
+      ],
     );
   }
 
@@ -70,31 +86,27 @@ class CusInputTextFieldd extends StatelessWidget {
     final txtCntl = TextEditingController();
     void Function(String) onChanged = (v) {};
 
-    switch (fields) {
-      case InpputField.username:
+    switch (inputType) {
+      case InputFieldType.username:
         txtCntl.text = context.select((InputDataProvider p) => p.username);
         onChanged = getOnChanged(context);
         break;
 
-      case InpputField.title:
+      case InputFieldType.title:
         txtCntl.text = context.select((InputDataProvider p) => p.title);
         onChanged = getOnChanged(context);
         break;
 
-      case InpputField.password:
+      case InputFieldType.password:
         txtCntl.text = context.select((InputDataProvider p) => p.password);
         onChanged = getOnChanged(context);
         break;
       default:
         break;
     }
-    print("inside text field field:$fields,");
+
     txtCntl.selection =
         TextSelection.fromPosition(TextPosition(offset: txtCntl.text.length));
     return builtTextField(context, txtCntl, onChanged);
   }
 }
-
-
-
- 

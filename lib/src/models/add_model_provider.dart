@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 import '../globals.dart';
-import '../screens/add.dart';
 
 class Sources extends ChangeNotifier {
   // Public field no need to  encapsulate
@@ -64,7 +63,7 @@ class Sources extends ChangeNotifier {
 
   void addCustomChars() {
     setPrefs(
-            key: describeEnum(CheckboxField.customChars),
+            key: describeEnum(SourceFieldType.customChars),
             value: customChars,
             isStr: true)
         .then((value) =>
@@ -92,7 +91,6 @@ class Sources extends ChangeNotifier {
         custom = val;
         break;
       default:
-        false;
         break;
     }
 
@@ -108,7 +106,7 @@ class Sources extends ChangeNotifier {
   set setPasswordLimit(int value) {
     _passwordLimit = value;
     setPrefs(
-            key: describeEnum(CheckboxField.passwordLimit),
+            key: describeEnum(SourceFieldType.passwordLimit),
             value: value,
             isInt: true)
         .then((success) {
@@ -123,15 +121,17 @@ class Sources extends ChangeNotifier {
   Future<bool> initPref() async {
     final prefs = await SharedPreferences.getInstance();
     try {
-      uppercase = prefs.getBool(describeEnum(CheckboxField.uppercase)) ?? true;
-      lowercase = prefs.getBool(describeEnum(CheckboxField.lowercase)) ?? true;
-      number = prefs.getBool(describeEnum(CheckboxField.number)) ?? true;
-      special = prefs.getBool(describeEnum(CheckboxField.special)) ?? true;
-      custom = prefs.getBool(describeEnum(CheckboxField.custom)) ?? false;
+      uppercase =
+          prefs.getBool(describeEnum(SourceFieldType.uppercase)) ?? true;
+      lowercase =
+          prefs.getBool(describeEnum(SourceFieldType.lowercase)) ?? true;
+      number = prefs.getBool(describeEnum(SourceFieldType.number)) ?? true;
+      special = prefs.getBool(describeEnum(SourceFieldType.special)) ?? true;
+      custom = prefs.getBool(describeEnum(SourceFieldType.custom)) ?? false;
       _passwordLimit =
-          prefs.getInt(describeEnum(CheckboxField.passwordLimit)) ?? 8;
+          prefs.getInt(describeEnum(SourceFieldType.passwordLimit)) ?? 8;
       customChars =
-          prefs.getString(describeEnum(CheckboxField.customChars)) ?? "";
+          prefs.getString(describeEnum(SourceFieldType.customChars)) ?? "";
       // customChars="";
       notifyListeners();
       return true;
@@ -168,7 +168,7 @@ class InputDataProvider extends ChangeNotifier {
   PasswordType _passwordType = PasswordType.username;
   PasswordType get passwordType => _passwordType;
 
-  void spasswordType(PasswordType value) {
+  set passwordType(PasswordType value) {
     _passwordType = value;
     notifyListeners();
   }

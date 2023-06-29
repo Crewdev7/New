@@ -51,9 +51,6 @@ Future<void> main() async {
 
   runApp(MultiProvider(
     providers: [
-      // ChangeNotifierProvider(
-      //   create: (context) => AppProvider(),
-      // ),
       ChangeNotifierProvider.value(
         value: themeProvider,
       ),
@@ -81,16 +78,15 @@ class PasswordManagerApp extends StatefulWidget {
 class _PasswordManagerAppState extends State<PasswordManagerApp> {
   @override
   Widget build(BuildContext context) {
-    var themeData = Provider.of<AppProvider>(context, listen: true);
-
     return MaterialApp(
       // theme Provider
-      theme: Styles.themeData(themeData.isDark, context),
+      theme: Styles.themeData(
+          context.select((AppProvider p) => p.isDark), context),
       title: appTitle,
       initialRoute: '/',
       routes: {
         InitScreen.routeName: (context) => const InitScreen(),
-        "settings": (context) => const SettingScreen(),
+        SettingScreen.routeName: (context) => const SettingScreen(),
       },
     );
   }

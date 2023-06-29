@@ -6,7 +6,7 @@ import 'package:password_manager/src/screens/setting.dart';
 
 class InitScreen extends StatefulWidget {
   const InitScreen({super.key});
-  static const routeName="/";
+  static const routeName = "/";
 
   @override
   State<InitScreen> createState() => _InitScreenState();
@@ -21,7 +21,6 @@ List<Widget> screens = [
 
 class _InitScreenState extends State<InitScreen> {
   int currentIndex = 0;
-  var isok = false;
 
   @override
   Widget build(BuildContext context) {

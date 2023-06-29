@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:password_manager/src/models/list_model_provider.dart';
+import 'package:password_manager/src/utils/mix.dart';
 import 'package:provider/provider.dart';
 
 class DataListScreen extends StatefulWidget {
   const DataListScreen({Key? key}) : super(key: key);
 
   @override
-  _DataListScreenState createState() => _DataListScreenState();
+  State<DataListScreen> createState() => _DataListScreenState();
 }
 
 class _DataListScreenState extends State<DataListScreen> {
@@ -31,9 +32,7 @@ class _DataListScreenState extends State<DataListScreen> {
               List<bool>.generate(passwordLists.length, (index) => false);
         });
       }
-    }).onError((error, stackTrace) {
-      print("you have eerror while fetching");
-    });
+    }).onError((error, stackTrace) {});
   }
 
   void _togglePasswordSelection(int index) {
@@ -57,8 +56,7 @@ class _DataListScreenState extends State<DataListScreen> {
     }
 
     for (var password in selectedPasswords) {
-      var int = dataProvider.remove(password.id!);
-      print("deleted item with id:$int");
+      dataProvider.remove(password.id!);
     }
 
     setState(() {
@@ -73,10 +71,9 @@ class _DataListScreenState extends State<DataListScreen> {
     final dataProvider = Provider.of<DataListProvider>(context);
     passwordLists = dataProvider.password;
 
-    return Scaffold(
-      appBar: AppBar(
-          title: Text(
-              "Store lists ${context.select((DataListProvider p) => p.password.length)}")),
+    return MyScaffold(
+      appBarTitle:
+          "Store lists ${context.select((DataListProvider p) => p.password.length)}",
       body: Column(
         children: [
           Expanded(
@@ -86,73 +83,71 @@ class _DataListScreenState extends State<DataListScreen> {
                 final password = passwordLists[index];
                 final isSelected = _selectedStates[index];
 
+                var paswordExpentionTile = Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(32)),
+                    color: isSelected
+                        ? Theme.of(context)
+                            .colorScheme
+                            .primaryContainer
+                            .withAlpha(90)
+                        : Theme.of(context).colorScheme.secondary.withAlpha(50),
+                  ),
+                  child: ExpansionTile(
+                    maintainState: true,
+                    leading: const Icon(Icons.lock),
+                    title: Text(password.title),
+                    trailing: isSelected ? const Icon(Icons.delete) : null,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 30.0, right: 20, bottom: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Username: ${password.username}'),
+                            Text('Password: ${password.password}'),
+                            Text('Password length: ${password.passwordLength}'),
+                            Text('Created at: ${password.createdAt}'),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(
+                                            text: password.password))
+                                        .then((value) => Fluttertoast.showToast(
+                                            msg: 'Password copied'));
+                                  },
+                                  child: const Text("Copy password"),
+                                ),
+                                const SizedBox(width: 20),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(
+                                            text: password.username))
+                                        .then((value) => Fluttertoast.showToast(
+                                            msg: 'Username copied'));
+                                  },
+                                  child: const Text("Copy username"),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      // const SizedBox(height: 20),
+                    ],
+                  ),
+                );
                 return InkWell(
                   onLongPress: () {
                     _togglePasswordSelection(index);
                   },
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(32)),
-                      color: isSelected
-                          ? Colors.red.withAlpha(70)
-                          : Theme.of(context)
-                              .colorScheme
-                              .primaryContainer
-                              .withAlpha(40),
-                    ),
-                    child: ExpansionTile(
-                      maintainState: true,
-                      leading: const Icon(Icons.lock),
-                      title: Text(password.title),
-                      trailing: isSelected ? const Icon(Icons.delete) : null,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 30.0, right: 20, bottom: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Username: ${password.username}'),
-                              Text('Password: ${password.password}'),
-                              Text(
-                                  'Password length: ${password.passwordLength}'),
-                              Text('Created at: ${password.createdAt}'),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Clipboard.setData(ClipboardData(
-                                              text: password.password))
-                                          .then((value) =>
-                                              Fluttertoast.showToast(
-                                                  msg: 'Password copied'));
-                                    },
-                                    child: const Text("Copy password"),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Clipboard.setData(ClipboardData(
-                                              text: password.username))
-                                          .then((value) =>
-                                              Fluttertoast.showToast(
-                                                  msg: 'Username copied'));
-                                    },
-                                    child: const Text("Copy username"),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        // const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
+                  child: paswordExpentionTile,
                 );
               },
             ),

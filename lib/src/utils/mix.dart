@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:password_manager/src/models/app_model_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../models/app_model_provider.dart';
+
 class MyScaffold extends StatelessWidget {
-  List<Widget>? appBarActions;
-  Widget? onDarkModeToggle;
-  String? appBarTitle;
+  final List<Widget>? appBarActions;
+  final Widget? onDarkModeToggle;
+  final String? appBarTitle;
   final Widget body;
   final Widget? floatingActionButton;
-  MyScaffold({
+  const MyScaffold({
     super.key,
     required this.body,
     this.appBarTitle,

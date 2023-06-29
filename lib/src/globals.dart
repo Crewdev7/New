@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 const appName = "Passy";
 const appTitle = "Passy Password Manager";
-const version = "0.1";
+const version = "0.2";
 const author = "CrewD";
 const description = "This app is for managing passwords  safely";
 const license = "Opensource";
@@ -29,6 +29,16 @@ getIconForType(PasswordType type) {
     default:
       return const Icon(Icons.verified_user_sharp);
   }
+}
+
+enum SourceFieldType {
+  uppercase,
+  lowercase,
+  number,
+  special,
+  custom,
+  customChars,
+  passwordLimit,
 }
 
 enum PasswordType {
